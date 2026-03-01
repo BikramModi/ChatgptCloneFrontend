@@ -20,7 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SideNavbarLayout = ({ children }) => {
     const [collapsed, setCollapsed] = useState(false);
-    const [closed, setClosed] = useState(false);
+    const [closed, setClosed] = useState(window.innerWidth < 768);
     const [openMenu, setOpenMenu] = useState(false);
     const [openHelp, setOpenHelp] = useState(false);
 
@@ -73,6 +73,22 @@ const SideNavbarLayout = ({ children }) => {
             window.removeEventListener("keydown", handleEsc);
         };
     }, []);
+
+
+  useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth < 768) {
+      setClosed(true);
+    } else {
+      setClosed(false);
+    }
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
     /* ================= CONFIRM LOGOUT ================= */
     const logoutToastId = useRef(null);
@@ -152,160 +168,170 @@ const SideNavbarLayout = ({ children }) => {
     };
 
     return (
-        <div className="flex h-screen bg-gray-950 text-white relative">
-            {/* ================= SIDEBAR ================= */}
+        <div className="flex h-screen bg-gray-950 text-white relative overflow-hidden">
+
+            {/* ================= MOBILE BACKDROP ================= */}
             {!closed && (
                 <div
-                    className={`bg-gray-900 transition-all duration-300 flex flex-col h-full
-          ${collapsed ? "w-16" : "w-64"}`}
-                >
-                    {/* ===== HEADER ===== */}
-                    <div className="p-3 border-b border-gray-800">
-                        <div className="flex items-center justify-between">
-                            <button
-                                onClick={() => setCollapsed(!collapsed)}
-                                className="p-2 hover:bg-gray-800 rounded-md transition"
-                            >
-                                <Bars3Icon className="w-6 h-6" />
-                            </button>
-
-                            {!collapsed && (
-                                <span className="font-semibold text-sm">Chats</span>
-                            )}
-                        </div>
-
-                        <button className="flex items-center gap-3 w-full p-2 mt-3 hover:bg-gray-800 rounded-md transition">
-                            <PlusIcon className="w-5 h-5" />
-                            {!collapsed && <span className="text-sm">New Chat</span>}
-                        </button>
-                    </div>
-
-                    {/* ===== SCROLLABLE CHAT LIST ===== */}
-                    <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                        {Array.from({ length: 20 }).map((_, index) => (
-                            <button
-                                key={index}
-                                className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md transition text-gray-300"
-                            >
-                                <ChatBubbleLeftRightIcon className="w-5 h-5" />
-                                {!collapsed && (
-                                    <span className="text-sm truncate">
-                                        Chat {index + 1}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* ===== FOOTER USER SECTION ===== */}
-                    <div ref={menuRef} className="relative p-2 border-t border-gray-800">
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setOpenMenu(!openMenu);
-                            }}
-                            className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md transition"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-semibold">
-                                {loadingUser ? "..." : getInitials()}
-                            </div>
-
-                            {!collapsed && (
-                                <div className="flex flex-col items-start text-left">
-                                    <span className="text-sm font-medium">
-                                        {loadingUser ? "Loading..." : user?.name}
-                                    </span>
-                                    <span className="text-xs text-gray-400">
-                                        Pro Plan
-                                    </span>
-                                </div>
-                            )}
-                        </button>
-
-                        {/* ===== DROPDOWN ===== */}
-                        {openMenu && (
-                            <div className="absolute bottom-14 left-2 right-2 bg-gray-800 rounded-xl shadow-xl border border-gray-700 p-2 space-y-1">
-
-                                {/* User Info */}
-                                <div className="flex items-center gap-3 p-2 border-b border-gray-700">
-                                    <UserCircleIcon className="w-8 h-8 text-gray-300" />
-                                    <div>
-                                        <p className="text-sm font-medium">
-                                            {user?.name}
-                                        </p>
-                                        <p className="text-xs text-gray-400">
-                                            {user?.email}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md transition text-sm">
-                                    <Cog6ToothIcon className="w-5 h-5" />
-                                    Settings
-                                </button>
-
-                                {/* Help */}
-                                <div
-                                    className="relative"
-                                    onMouseEnter={() => setOpenHelp(true)}
-                                    onMouseLeave={() => setOpenHelp(false)}
-                                >
-                                    <button className="flex items-center justify-between w-full p-2 hover:bg-gray-700 rounded-md transition text-sm">
-                                        <div className="flex items-center gap-3">
-                                            <QuestionMarkCircleIcon className="w-5 h-5" />
-                                            Help
-                                        </div>
-                                        <ChevronRightIcon className="w-4 h-4" />
-                                    </button>
-
-                                    {openHelp && (
-                                        <div className="absolute right-[-180px] top-0 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-2 space-y-1">
-                                            <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
-                                                <LifebuoyIcon className="w-5 h-5" />
-                                                Help Center
-                                            </button>
-
-                                            <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
-                                                <SparklesIcon className="w-5 h-5" />
-                                                Release Notes
-                                            </button>
-
-                                            <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
-                                                <DocumentTextIcon className="w-5 h-5" />
-                                                Terms & Conditions
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Logout */}
-                                <button
-                                    onClick={confirmLogout}
-                                    className="flex items-center gap-3 w-full p-2 hover:bg-red-600/20 text-red-400 rounded-md transition text-sm"
-                                >
-                                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
-                                    Logout
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                    onClick={() => setClosed(true)}
+                    className="md:hidden fixed inset-0 bg-black/50 z-30"
+                />
             )}
 
-            {/* ================= MAIN CONTENT ================= */}
-            <div className="flex-1 flex flex-col">
-                <div className="p-4 flex items-center">
-                    {closed && (
+            {/* ================= SIDEBAR ================= */}
+            <div
+                className={`
+        fixed md:relative z-40 md:z-auto
+        bg-gray-900 transition-all duration-300 flex flex-col h-full
+        ${collapsed ? "w-16" : "w-64"}
+        ${closed ? "-translate-x-full" : "translate-x-0"}
+        md:translate-x-0
+      `}
+            >
+                {/* ===== HEADER ===== */}
+                <div className="p-3 border-b border-gray-800">
+                    <div className="flex items-center justify-between">
                         <button
-                            onClick={() => setClosed(false)}
+                            onClick={() => setCollapsed(!collapsed)}
                             className="p-2 hover:bg-gray-800 rounded-md transition"
                         >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
-                    )}
+
+                        {!collapsed && (
+                            <span className="font-semibold text-sm">Chats</span>
+                        )}
+                    </div>
+
+                    <button className="flex items-center gap-3 w-full p-2 mt-3 hover:bg-gray-800 rounded-md transition">
+                        <PlusIcon className="w-5 h-5" />
+                        {!collapsed && <span className="text-sm">New Chat</span>}
+                    </button>
                 </div>
 
-                <div className="flex-1 overflow-auto p-6">
+                {/* ===== CHAT LIST ===== */}
+                <div className="flex-1 overflow-y-auto p-2 space-y-2">
+                    {Array.from({ length: 20 }).map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => window.innerWidth < 768 && setClosed(true)}
+                            className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md transition text-gray-300"
+                        >
+                            <ChatBubbleLeftRightIcon className="w-5 h-5" />
+                            {!collapsed && (
+                                <span className="text-sm truncate">
+                                    Chat {index + 1}
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                {/* ===== FOOTER USER SECTION ===== */}
+                <div ref={menuRef} className="relative p-2 border-t border-gray-800">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenu(!openMenu);
+                        }}
+                        className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md transition"
+                    >
+                        <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-semibold">
+                            {loadingUser ? "..." : getInitials()}
+                        </div>
+
+                        {!collapsed && (
+                            <div className="flex flex-col items-start text-left">
+                                <span className="text-sm font-medium">
+                                    {loadingUser ? "Loading..." : user?.name}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                    Pro Plan
+                                </span>
+                            </div>
+                        )}
+                    </button>
+
+                    {openMenu && (
+                        <div className="absolute bottom-14 left-2 right-2 bg-gray-800 rounded-xl shadow-xl border border-gray-700 p-2 space-y-1">
+
+                            {/* User Info */}
+                            <div className="flex items-center gap-3 p-2 border-b border-gray-700">
+                                <UserCircleIcon className="w-8 h-8 text-gray-300" />
+                                <div>
+                                    <p className="text-sm font-medium">{user?.name}</p>
+                                    <p className="text-xs text-gray-400">{user?.email}</p>
+                                </div>
+                            </div>
+
+                            <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md transition text-sm">
+                                <Cog6ToothIcon className="w-5 h-5" />
+                                Settings
+                            </button>
+
+                            {/* Help */}
+                            <div
+                                className="relative"
+                                onMouseEnter={() => setOpenHelp(true)}
+                                onMouseLeave={() => setOpenHelp(false)}
+                            >
+                                <button className="flex items-center justify-between w-full p-2 hover:bg-gray-700 rounded-md transition text-sm">
+                                    <div className="flex items-center gap-3">
+                                        <QuestionMarkCircleIcon className="w-5 h-5" />
+                                        Help
+                                    </div>
+                                    <ChevronRightIcon className="w-4 h-4" />
+                                </button>
+
+                                {openHelp && (
+                                    <div className="absolute right-[-180px] top-0 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-2 space-y-1">
+                                        <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
+                                            <LifebuoyIcon className="w-5 h-5" />
+                                            Help Center
+                                        </button>
+
+                                        <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
+                                            <SparklesIcon className="w-5 h-5" />
+                                            Release Notes
+                                        </button>
+
+                                        <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
+                                            <DocumentTextIcon className="w-5 h-5" />
+                                            Terms & Conditions
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Logout */}
+                            <button
+                                onClick={confirmLogout}
+                                className="flex items-center gap-3 w-full p-2 hover:bg-red-600/20 text-red-400 rounded-md transition text-sm"
+                            >
+                                <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* ================= MAIN CONTENT ================= */}
+            <div className="flex-1 flex flex-col w-full">
+
+                {/* MOBILE TOP BAR */}
+                <div className="md:hidden p-4 flex items-center justify-between border-b border-gray-800">
+                    <button
+                        onClick={() => setClosed(false)}
+                        className="p-2 hover:bg-gray-800 rounded-md transition"
+                    >
+                        <Bars3Icon className="w-6 h-6" />
+                    </button>
+
+                    <span className="text-sm font-medium">Chats</span>
+                </div>
+
+                <div className="flex-1 overflow-auto p-4 md:p-6">
                     {children}
                 </div>
             </div>

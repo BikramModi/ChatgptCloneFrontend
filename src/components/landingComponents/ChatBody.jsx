@@ -16,11 +16,19 @@ const ChatBody = ({ navbarHeight = 72 }) => {
     ]);
     const [input, setInput] = useState("");
     const scrollRef = useRef(null);
+    const textareaRef = useRef(null);
 
     const [showLogin, setShowLogin] = useState(false);
     const [showSignup, setShowSignup] = useState(false);
 
-    // Scroll to bottom on new message
+    /* ================= Auto Focus On Load ================= */
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, []);
+
+    /* ================= Auto Scroll ================= */
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -32,7 +40,6 @@ const ChatBody = ({ navbarHeight = 72 }) => {
 
         setMessages((prev) => [...prev, { sender: "user", text: input }]);
 
-        // Mock assistant response
         setTimeout(() => {
             setMessages((prev) => [
                 ...prev,
@@ -41,6 +48,11 @@ const ChatBody = ({ navbarHeight = 72 }) => {
         }, 1000);
 
         setInput("");
+
+        // Refocus textarea after sending
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
     };
 
     const handleKeyPress = (e) => {
@@ -53,32 +65,48 @@ const ChatBody = ({ navbarHeight = 72 }) => {
     const closeModals = () => {
         setShowLogin(false);
         setShowSignup(false);
+
+        // Refocus after modal closes
+        setTimeout(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+            }
+        }, 0);
     };
 
     return (
         <div className="flex justify-center bg-gray-900 min-h-screen relative">
-            {/* Chat container */}
             <div
-                className="flex flex-col w-full max-w-2xl"
+                className="flex flex-col w-full max-w-4xl px-3 sm:px-6"
                 style={{ height: `calc(100vh - ${navbarHeight}px)` }}
             >
-                {/* Messages area */}
+                {/* ================= Messages ================= */}
                 <div
                     ref={scrollRef}
-                    className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800"
+                    className="flex-1 overflow-y-auto py-4 sm:py-6 space-y-4"
                     style={{ minHeight: 0 }}
                 >
                     {messages.map((msg, idx) => (
                         <div
                             key={idx}
-                            className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
-                                }`}
+                            className={`flex ${
+                                msg.sender === "user"
+                                    ? "justify-end"
+                                    : "justify-start"
+                            }`}
                         >
                             <div
-                                className={`max-w-[70%] px-4 py-2 rounded-lg ${msg.sender === "user"
-                                        ? "bg-emerald-600 text-white rounded-br-none"
-                                        : "bg-gray-800 text-gray-100 rounded-bl-none"
-                                    }`}
+                                className={`
+                                    max-w-[85%] sm:max-w-[75%] lg:max-w-[65%]
+                                    px-3 sm:px-4 py-2
+                                    text-sm sm:text-base
+                                    rounded-lg
+                                    ${
+                                        msg.sender === "user"
+                                            ? "bg-emerald-600 text-white rounded-br-none"
+                                            : "bg-gray-800 text-gray-100 rounded-bl-none"
+                                    }
+                                `}
                             >
                                 {msg.text}
                             </div>
@@ -86,65 +114,80 @@ const ChatBody = ({ navbarHeight = 72 }) => {
                     ))}
                 </div>
 
-                {/* Fixed bottom section */}
-                <div className="flex-shrink-0 bg-gray-800 border-t border-gray-700 p-4">
-                    {/* Timed Login Reminder */}
+                {/* ================= Bottom Section ================= */}
+                <div className="flex-shrink-0 bg-gray-800 border-t border-gray-700 p-3 sm:p-4">
                     <TimedLoginReminder
                         onLoginClick={() => setShowLogin(true)}
                         onSignupClick={() => setShowSignup(true)}
                     />
 
-                    {/* Input + Send Button */}
+                    {/* Input */}
                     <div className="flex items-center mt-2">
                         <textarea
+                            ref={textareaRef}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyPress}
                             placeholder="Type your message..."
                             rows={1}
-                            className="flex-1 resize-none px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="
+                                flex-1 resize-none
+                                px-3 sm:px-4 py-2
+                                text-sm sm:text-base
+                                rounded-lg
+                                bg-gray-700 text-white
+                                focus:outline-none focus:ring-2 focus:ring-emerald-500
+                            "
                         />
                         <button
                             onClick={handleSend}
-                            className="ml-3 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white font-medium transition"
+                            className="
+                                ml-2 sm:ml-3
+                                px-3 sm:px-4 py-2
+                                text-sm sm:text-base
+                                bg-emerald-600 hover:bg-emerald-500
+                                rounded-lg text-white font-medium transition
+                            "
                         >
                             Send
                         </button>
                     </div>
 
-                    {/* Quick Action Buttons */}
-                    <div className="flex mt-3 space-x-3 justify-start flex-wrap">
-                        <button className="flex items-center gap-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
-                            <PaperClipIcon className="w-5 h-5" />
-                            Attach
+                    {/* Quick Actions */}
+                    <div className="flex mt-3 gap-2 flex-wrap">
+                        <button className="flex items-center gap-1 px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <PaperClipIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="hidden sm:inline">Attach</span>
                         </button>
-                        <button className="flex items-center gap-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
-                            <MagnifyingGlassIcon className="w-5 h-5" />
-                            Search
+
+                        <button className="flex items-center gap-1 px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <MagnifyingGlassIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="hidden sm:inline">Search</span>
                         </button>
-                        <button className="flex items-center gap-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
-                            <BookOpenIcon className="w-5 h-5" />
-                            Study
+
+                        <button className="flex items-center gap-1 px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <BookOpenIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="hidden sm:inline">Study</span>
                         </button>
-                        <button className="flex items-center gap-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
-                            <PhotoIcon className="w-5 h-5" />
-                            Create Image
+
+                        <button className="flex items-center gap-1 px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <PhotoIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="hidden sm:inline">Create Image</span>
                         </button>
                     </div>
-
-
                 </div>
 
                 {/* Disclaimer */}
-                <p className="text-center mt-2 text-sm text-gray-400">
-                    ⚠️ This assistant may occasionally generate incorrect information. Always double-check important details.
+                <p className="text-center mt-2 text-xs sm:text-sm text-gray-400 px-2">
+                    ⚠️ This assistant may occasionally generate incorrect
+                    information. Always double-check important details.
                 </p>
             </div>
 
-            {/* Login/Signup Modal */}
+            {/* ================= Modal ================= */}
             {(showLogin || showSignup) && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-                    <div className="bg-gray-900 w-full max-w-md rounded-xl p-8 shadow-2xl relative">
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
+                    <div className="bg-gray-900 w-full max-w-md rounded-xl p-6 sm:p-8 shadow-2xl relative">
                         <button
                             onClick={closeModals}
                             className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -152,7 +195,9 @@ const ChatBody = ({ navbarHeight = 72 }) => {
                             ✕
                         </button>
 
-                        {showLogin && <LoginPageChatgpt onSuccess={closeModals} />}
+                        {showLogin && (
+                            <LoginPageChatgpt onSuccess={closeModals} />
+                        )}
                         {showSignup && (
                             <RegisterPageChatgpt
                                 onSuccess={closeModals}

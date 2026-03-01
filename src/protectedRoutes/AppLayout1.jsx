@@ -1,28 +1,21 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
-
-import AppNavbar1 from './AppNavbar1'
-import AppFooter1 from './AppFooter1'
-import NavbarChatgptLayout from './NavbarChatgptLayout'
-import ChatBodyLayout from './ChatBodyLayout'
-import SideNavbarLayout from './SideNavbarLayout'
-import ChatGPTLayout from './PageLayout'
+import React from "react";
+import { Outlet } from "react-router-dom";
+import SideNavbarLayout from "./SideNavbarLayout"; // your sidebar component
 
 const AppLayout1 = () => {
   return (
-    <>
-        {/* <AppNavbar1 /> */}
-        <div className='flex'>
-        <SideNavbarLayout />
-        <Outlet /> 
+    <div className="flex h-dvh overflow-hidden bg-gray-900">
 
-        {/* <NavbarChatgptLayout /> */}
-        {/* <Outlet />             use chatbodylayout page */}
-        {/* <ChatBodyLayout /> */}
-        {/* <AppFooter1 /> */}
-        </div>
-    </>
-  )
-}
+      {/* Sidebar */}
+      <SideNavbarLayout />
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <Outlet />
+      </div>
+
+    </div>
+  );
+};
 
 export default AppLayout1;

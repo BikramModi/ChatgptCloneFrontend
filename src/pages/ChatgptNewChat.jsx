@@ -7,204 +7,13 @@ import {
     TrashIcon,
     PencilSquareIcon,
     ExclamationCircleIcon,
-    PaperClipIcon,
-    MagnifyingGlassIcon,
-    BookOpenIcon,
-    PhotoIcon,
     ChevronDownIcon,
     SparklesIcon,
     CpuChipIcon,
 } from "@heroicons/react/24/outline";
 
-
-
-
-
-// const ChatGPTLayout = () => {
-//     const [messages, setMessages] = useState([]);
-//     const [input, setInput] = useState("");
-//     const [conversationId, setConversationId] = useState(null);
-//     const [isStreaming, setIsStreaming] = useState(false);
-
-//     const bottomRef = useRef(null);
-//     const textareaRef = useRef(null);
-
-//     useEffect(() => {
-//         textareaRef.current?.focus();
-//     }, []);
-
-//     useEffect(() => {
-//         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-//     }, [messages]);
-
-//     const createConversation = async () => {
-//         const res = await fetch("http://localhost:6003/conversations", {
-//             method: "POST",
-//             credentials: "include",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify({
-//                 title: "New Chat",
-//                 model: "gpt-3.5-turbo",
-//                 systemPrompt: "You are a helpful assistant.",
-//                 visibility: "private",
-//                 isArchived: false,
-//             }),
-//         });
-
-//         const data = await res.json();
-//         setConversationId(data._id);
-//         return data._id;
-//     };
-
-//     const handleSend = async () => {
-//         if (!input.trim() || isStreaming) return;
-
-//         let convId = conversationId;
-
-//         if (!convId) {
-//             convId = await createConversation();
-//         }
-
-//         const userText = input;
-//         setInput("");
-
-//         // 1️⃣ Instantly show user message
-//         setMessages((prev) => [
-//             ...prev,
-//             { sender: "user", content: userText },
-//         ]);
-
-//         // 2️⃣ Add empty assistant placeholder
-//         setMessages((prev) => [
-//             ...prev,
-//             { sender: "assistant", content: "" },
-//         ]);
-
-//         setIsStreaming(true);
-
-//         // 3️⃣ Call SSE message endpoint
-//         const response = await fetch(
-//             `http://localhost:6003/messages/conversations/${convId}/messages`,
-//             {
-//                 method: "POST",
-//                 credentials: "include",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                 },
-//                 body: JSON.stringify({ content: userText }),
-//             }
-//         );
-
-//         const reader = response.body.getReader();
-//         const decoder = new TextDecoder("utf-8");
-
-//         let assistantText = "";
-
-//         while (true) {
-//             const { done, value } = await reader.read();
-//             if (done) break;
-
-//             const chunk = decoder.decode(value, { stream: true });
-
-//             const lines = chunk.split("\n");
-
-//             for (let line of lines) {
-//                 if (line.startsWith("data: ")) {
-//                     const data = line.replace("data: ", "").trim();
-
-//                     if (data === "[DONE]") {
-//                         setIsStreaming(false);
-//                         return;
-//                     }
-
-//                     assistantText += data;
-
-//                     // Update last assistant message
-//                     setMessages((prev) => {
-//                         const updated = [...prev];
-//                         updated[updated.length - 1].content = assistantText;
-//                         return updated;
-//                     });
-//                 }
-//             }
-//         }
-
-//         setIsStreaming(false);
-//     };
-
-//     const handleKeyPress = (e) => {
-//         if (e.key === "Enter" && !e.shiftKey) {
-//             e.preventDefault();
-//             handleSend();
-//         }
-//     };
-
-//     return (
-//         <div className="flex flex-col h-screen bg-gray-900 text-white">
-
-//             {/* CHAT BODY */}
-//             <div className="flex-1 overflow-y-auto">
-//                 <div className="max-w-[720px] mx-auto w-full p-6 space-y-4">
-//                     {messages.map((msg, idx) => (
-//                         <div
-//                             key={idx}
-//                             className={`flex ${msg.sender === "user"
-//                                     ? "justify-end"
-//                                     : "justify-start"
-//                                 }`}
-//                         >
-//                             <div
-//                                 className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.sender === "user"
-//                                         ? "bg-emerald-600 rounded-br-none"
-//                                         : "bg-gray-800 rounded-bl-none"
-//                                     }`}
-//                             >
-//                                 {msg.content}
-//                             </div>
-//                         </div>
-//                     ))}
-
-//                     {isStreaming && (
-//                         <div className="text-gray-400 text-sm">
-//                             Assistant is typing...
-//                         </div>
-//                     )}
-
-//                     <div ref={bottomRef} />
-//                 </div>
-//             </div>
-
-//             {/* INPUT */}
-//             <div className="border-t border-gray-800 p-4">
-//                 <div className="max-w-[720px] mx-auto w-full flex">
-//                     <textarea
-//                         ref={textareaRef}
-//                         value={input}
-//                         onChange={(e) => setInput(e.target.value)}
-//                         onKeyDown={handleKeyPress}
-//                         placeholder="Message ChatGPT..."
-//                         rows={1}
-//                         className="flex-1 resize-none px-4 py-3 rounded-xl bg-gray-800 focus:outline-none"
-//                     />
-//                     <button
-//                         onClick={handleSend}
-//                         className="ml-3 px-4 py-2 bg-emerald-600 rounded-xl"
-//                     >
-//                         Send
-//                     </button>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default ChatGPTLayout;
-
-
-
-
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const ChatGPTLayout = () => {
     const [messages, setMessages] = useState([]);
@@ -215,11 +24,9 @@ const ChatGPTLayout = () => {
     const bottomRef = useRef(null);
     const textareaRef = useRef(null);
 
-    const modelRef = useRef(null);   // ✅ add this
-    const moreRef = useRef(null);    // ✅ add this
+    const modelRef = useRef(null);
+    const moreRef = useRef(null);
 
-
-    // ✅ ADD THESE (missing before)
     const [showModelMenu, setShowModelMenu] = useState(false);
     const [showMoreMenu, setShowMoreMenu] = useState(false);
 
@@ -231,13 +38,49 @@ const ChatGPTLayout = () => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+
+    // ================= CLOSE DROPDOWN ON OUTSIDE CLICK =================
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Close model menu
+            if (
+                modelRef.current &&
+                !modelRef.current.contains(event.target)
+            ) {
+                setShowModelMenu(false);
+            }
+
+            // Close more menu
+            if (
+                moreRef.current &&
+                !moreRef.current.contains(event.target)
+            ) {
+                setShowMoreMenu(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+
+        textarea.style.height = "auto";
+        textarea.style.height = textarea.scrollHeight + "px";
+    }, [input]);
+
+    // ================= CREATE CONVERSATION =================
     const createConversation = async () => {
         const res = await fetch("http://localhost:6005/conversations", {
             method: "POST",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 title: "New Chat",
                 model: "gpt-3.5-turbo",
@@ -248,21 +91,17 @@ const ChatGPTLayout = () => {
         });
 
         const data = await res.json();
-
-        console.log("Conversation response:", data); // 🔍 check what the backend sends
-
-        // Use the correct path to _id
         const convId = data?.data?._id || data?._id;
 
         setConversationId(convId);
         return convId;
     };
 
+    // ================= SEND MESSAGE =================
     const handleSend = async () => {
         if (!input.trim() || isStreaming) return;
 
         let convId = conversationId;
-
         if (!convId) {
             convId = await createConversation();
         }
@@ -270,32 +109,25 @@ const ChatGPTLayout = () => {
         const userText = input;
         setInput("");
 
-        // 1️⃣ Instantly show user message
+        // Add user + assistant placeholder in ONE state update
         setMessages((prev) => [
             ...prev,
             { sender: "user", content: userText },
-        ]);
-
-        // 2️⃣ Add empty assistant placeholder
-        setMessages((prev) => [
-            ...prev,
             { sender: "assistant", content: "" },
         ]);
 
         setIsStreaming(true);
 
-        // 3️⃣ Call SSE message endpoint
         const response = await fetch(
             `http://localhost:6005/messages/conversations/${convId}/messages`,
             {
                 method: "POST",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ content: userText }),
             }
         );
+
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
@@ -307,29 +139,43 @@ const ChatGPTLayout = () => {
             if (done) break;
 
             const chunk = decoder.decode(value, { stream: true });
-
             const lines = chunk.split("\n");
 
             for (let line of lines) {
-                if (line.startsWith("data: ")) {
-                    const data = line.replace("data: ", "").trim();
+                if (!line.startsWith("data:")) continue;
 
-                    if (data === "[DONE]") {
-                        setIsStreaming(false);
-                        return;
-                    }
+                let word = line.replace("data:", "").trim();
 
-                    assistantText += data;
-
-                    // Update last assistant message
-                    setMessages((prev) => {
-                        const updated = [...prev];
-                        updated[updated.length - 1].content = assistantText;
-                        return updated;
-                    });
+                if (word === "[DONE]") {
+                    setIsStreaming(false);
+                    return;
                 }
+
+                // ✅ Add space only if needed
+                if (
+                    assistantText.length > 0 &&
+                    !assistantText.endsWith(" ") &&
+                    ![".", ",", "!", "?", ":", ";"].includes(word)
+                ) {
+                    assistantText += " ";
+                }
+
+                assistantText += word;
+
+                // ✅ Create paragraph after sentence endings
+                let formattedText = assistantText
+                    .replace(/([.!?])\s+/g, "$1\n\n")
+                    .replace(/\n\n+/g, "\n\n");
+
+                setMessages((prev) => {
+                    const updated = [...prev];
+                    updated[updated.length - 1].content = formattedText;
+                    return updated;
+                });
             }
         }
+
+
 
         setIsStreaming(false);
     };
@@ -340,105 +186,52 @@ const ChatGPTLayout = () => {
             handleSend();
         }
     };
+
     return (
-        <div className="flex flex-col h-screen bg-gray-900 text-white w-full">
+        <div className="flex flex-col h-screen w-full bg-gray-900 text-white">
 
             {/* ================= HEADER ================= */}
-            <header className="flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-gray-900 shrink-0">
+            <header className="sticky top-0 z-10 flex items-center justify-between px-3 sm:px-6 py-3 border-b border-gray-800 bg-gray-900">
 
-                {/* LEFT - Model Dropdown */}
+                {/* LEFT - Model */}
                 <div className="relative" ref={modelRef}>
                     <button
                         onClick={() => setShowModelMenu(!showModelMenu)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition text-sm sm:text-base"
                     >
-                        <SparklesIcon className="w-5 h-5 text-emerald-400" />
-                        <span className="text-sm font-medium">ChatGPT</span>
+                        <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+                        <span className="font-medium">ChatGPT</span>
                         <ChevronDownIcon className="w-4 h-4" />
                     </button>
-
-                    {showModelMenu && (
-                        <div className="absolute left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-xl shadow-xl p-2 space-y-1 z-50">
-                            <button className="flex items-center w-full px-3 py-2 text-sm hover:bg-gray-700 rounded-md">
-                                <SparklesIcon className="w-5 h-5 mr-3 text-emerald-400" />
-                                GPT-4o
-                            </button>
-                            <button className="flex items-center w-full px-3 py-2 text-sm hover:bg-gray-700 rounded-md">
-                                <CpuChipIcon className="w-5 h-5 mr-3 text-blue-400" />
-                                GPT-4 Turbo
-                            </button>
-                            <button className="flex items-center w-full px-3 py-2 text-sm hover:bg-gray-700 rounded-md">
-                                <SparklesIcon className="w-5 h-5 mr-3 text-purple-400" />
-                                GPT-3.5
-                            </button>
-                        </div>
-                    )}
                 </div>
 
-                {/* RIGHT SECTION */}
-                <div className="flex items-center space-x-3">
-
-                    <div className="flex items-center space-x-2 px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/40 rounded-lg text-yellow-400 text-sm whitespace-nowrap">
-                        <ExclamationCircleIcon className="w-5 h-5" />
-                        <span>Memory Full</span>
+                {/* RIGHT */}
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/40 rounded-lg text-yellow-400 text-xs sm:text-sm">
+                        <ExclamationCircleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        Memory Full
                     </div>
 
-                    <button className="flex items-center px-4 py-2 text-sm bg-gray-800 rounded-lg hover:bg-gray-700 transition whitespace-nowrap">
-                        <ShareIcon className="w-5 h-5 mr-2" />
+                    <button className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gray-800 rounded-lg hover:bg-gray-700 transition">
                         Share
                     </button>
-
-                    {/* Three Dots */}
-                    <div className="relative" ref={moreRef}>
-                        <button
-                            onClick={() => setShowMoreMenu(!showMoreMenu)}
-                            className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition"
-                        >
-                            <EllipsisVerticalIcon className="w-5 h-5" />
-                        </button>
-
-                        {showMoreMenu && (
-                            <div className="absolute right-0 mt-2 w-60 bg-gray-800 border border-gray-700 rounded-xl shadow-xl p-2 space-y-1 z-50">
-                                <button className="flex items-center w-full px-3 py-2 text-sm hover:bg-gray-700 rounded-md">
-                                    <PencilSquareIcon className="w-5 h-5 mr-3" />
-                                    Rename Chat
-                                </button>
-                                <button className="flex items-center w-full px-3 py-2 text-sm hover:bg-gray-700 rounded-md">
-                                    <LinkIcon className="w-5 h-5 mr-3" />
-                                    Copy Link
-                                </button>
-                                <button className="flex items-center w-full px-3 py-2 text-sm hover:bg-gray-700 rounded-md">
-                                    <DocumentDuplicateIcon className="w-5 h-5 mr-3" />
-                                    Duplicate Chat
-                                </button>
-                                <div className="border-t border-gray-700 my-2"></div>
-                                <button className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-gray-700 rounded-md">
-                                    <TrashIcon className="w-5 h-5 mr-3" />
-                                    Delete Chat
-                                </button>
-                            </div>
-                        )}
-                    </div>
                 </div>
             </header>
 
             {/* ================= CHAT BODY ================= */}
+            <div className="flex-1 overflow-y-auto px-2 sm:px-6 py-4">
+                <div className="max-w-full sm:max-w-3xl mx-auto space-y-5">
 
-            {/* CHAT BODY */}
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-[720px] mx-auto w-full p-6 space-y-4">
                     {messages.map((msg, idx) => (
                         <div
                             key={idx}
-                            className={`flex ${msg.sender === "user"
-                                ? "justify-end"
-                                : "justify-start"
+                            className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
                                 }`}
                         >
                             <div
-                                className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.sender === "user"
-                                    ? "bg-emerald-600 rounded-br-none"
-                                    : "bg-gray-800 rounded-bl-none"
+                                className={`px-4 py-3 rounded-2xl text-sm sm:text-base md:text-[17px] leading-relaxed whitespace-pre-wrap break-words max-w-[85%] sm:max-w-[75%] ${msg.sender === "user"
+                                        ? "bg-emerald-600 rounded-br-md"
+                                        : "bg-gray-800 rounded-bl-md"
                                     }`}
                             >
                                 {msg.content}
@@ -447,7 +240,7 @@ const ChatGPTLayout = () => {
                     ))}
 
                     {isStreaming && (
-                        <div className="text-gray-400 text-sm">
+                        <div className="text-gray-400 text-xs sm:text-sm animate-pulse">
                             Assistant is typing...
                         </div>
                     )}
@@ -457,8 +250,9 @@ const ChatGPTLayout = () => {
             </div>
 
             {/* ================= INPUT ================= */}
-            <div className="border-t border-gray-800 p-4">
-                <div className="max-w-[720px] mx-auto w-full flex">
+            <div className="border-t border-gray-800 p-3 sm:p-4 bg-gray-900">
+                <div className="max-w-full sm:max-w-3xl mx-auto flex items-end gap-2 sm:gap-3">
+
                     <textarea
                         ref={textareaRef}
                         value={input}
@@ -466,18 +260,21 @@ const ChatGPTLayout = () => {
                         onKeyDown={handleKeyPress}
                         placeholder="Message ChatGPT..."
                         rows={1}
-                        className="flex-1 resize-none px-4 py-3 rounded-xl bg-gray-800 focus:outline-none"
+                        className="flex-1 resize-none px-4 py-3 rounded-xl bg-gray-800 focus:outline-none text-sm sm:text-base max-h-40 overflow-y-auto"
                     />
+
                     <button
                         onClick={handleSend}
-                        className="ml-3 px-4 py-2 bg-emerald-600 rounded-xl"
+                        className="px-4 sm:px-5 py-2.5 bg-emerald-600 rounded-xl text-sm sm:text-base hover:bg-emerald-500 transition"
                     >
                         Send
                     </button>
                 </div>
             </div>
+
         </div>
     );
+
 };
 
 export default ChatGPTLayout;

@@ -1,15 +1,8 @@
 import React from 'react'
-import Navbar from '../components/landingComponents/Navbar'
+
 
 import Header from '../components/landingComponents/NavbarChatgpt'
 
-import FlashSaleList from '../components/landingComponents/FlashSaleList'
-import BannerCardList from '../components/landingComponents/BannerCardList'
-import ImageCarouselList from '../components/landingComponents/ImageCarouselList'
-
-import Footer from '../components/landingComponents/Footer'
-import CategoryPage from './CategoryPage'
-import GuestWelcomeList from '../components/landingComponents/GuestWelcomeList'
 
 import useAuth from '../hooks/useAuth'
 import { useEffect } from 'react'
