@@ -246,7 +246,7 @@ const LoginPage = () => {
     if (!user) return;
 
     if (user.role === "user") {
-      navigate("/dashboard", { replace: true });
+      navigate("/user-dashboard", { replace: true });
     }
   }, [user, navigate]);
 
