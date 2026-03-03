@@ -33,6 +33,8 @@ const Header = () => {
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+
+
     return (
         <>
             <header className="relative w-full bg-gray-900 border-b border-gray-800">
@@ -115,27 +117,31 @@ const Header = () => {
                             <ChevronDownIcon className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
                         </button>
 
-                        {showSettings && (
-                            <div className="absolute top-12 sm:top-14 right-0 w-48 sm:w-52 bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-2 space-y-1 z-50">
-                                <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-md">
-                                    Profile
-                                </button>
+                       {showSettings && (
+    <div className="absolute top-12 sm:top-14 right-0 
+        w-40 sm:w-52 
+        bg-gray-800 border border-gray-700 
+        rounded-lg shadow-lg p-2 space-y-1 z-50">
 
-                                <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-md">
-                                    Theme Settings
-                                </button>
+        <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-md">
+            Profile
+        </button>
 
-                                <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-md">
-                                    Manage Subscription
-                                </button>
+        <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-md">
+            Theme Settings
+        </button>
 
-                                <div className="border-t border-gray-700 my-2"></div>
+        <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-gray-300 hover:bg-gray-700 rounded-md">
+            Manage Subscription
+        </button>
 
-                                <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-gray-700 rounded-md">
-                                    Logout
-                                </button>
-                            </div>
-                        )}
+        <div className="border-t border-gray-700 my-2"></div>
+
+        <button className="w-full text-left px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-gray-700 rounded-md">
+            Logout
+        </button>
+    </div>
+)}
                     </div>
                 </div>
             </header>

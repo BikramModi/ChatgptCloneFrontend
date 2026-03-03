@@ -284,7 +284,7 @@ const SideNavbarLayout = ({ children }) => {
                                 </button>
 
                                 {openHelp && (
-                                    <div className="absolute right-[-180px] top-0 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-2 space-y-1">
+                                    <div className="absolute top-0 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-2 space-y-1">
                                         <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
                                             <LifebuoyIcon className="w-5 h-5" />
                                             Help Center
