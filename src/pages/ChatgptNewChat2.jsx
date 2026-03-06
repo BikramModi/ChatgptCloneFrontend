@@ -12,7 +12,9 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-const ChatGPTLayout = () => {
+import { useParams } from "react-router-dom";
+
+const ChatGPTLayout2 = () => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [conversationId, setConversationId] = useState(null);
@@ -23,6 +25,11 @@ const ChatGPTLayout = () => {
 
     const bottomRef = useRef(null);
     const textareaRef = useRef(null);
+
+    const { id } = useParams();
+    useEffect(() => {
+        if (id) setConversationId(id);
+    }, [id]);
 
     useEffect(() => {
         textareaRef.current?.focus();
@@ -420,4 +427,4 @@ const ChatGPTLayout = () => {
     );
 };
 
-export default ChatGPTLayout;
+export default ChatGPTLayout2;

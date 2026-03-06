@@ -68,6 +68,9 @@ import CodPaymentPage from "./paymentsUI/CodPaymentPage";
 import PrivacyPolicyPage from "./pages/simplePages/PrivacyPolicyPage";
 
 
+import ChatGPTLayout1 from "./pages/ChatgptNewChat1";
+import ChatGPTLayout2 from "./pages/ChatgptNewChat2";
+
 
 
 function App() {
@@ -262,7 +265,15 @@ console.log("Fetched user for protected route:", res.data.user);
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contact1" element={<ContactPage />} />
 
+
+
             <Route path="/user-dashboard" element={<CategoryWithProductsPage />} />
+            <Route path="/new-chat" element={ <ChatGPTLayout1 /> } />
+            <Route path="/new-chats/:id" element={ <ChatGPTLayout2 /> } />
+
+
+
+
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/category/:id" element={<ProductPage />} />
             <Route path="/single-product/:catId/:id" element={<SingleProductPage />} />

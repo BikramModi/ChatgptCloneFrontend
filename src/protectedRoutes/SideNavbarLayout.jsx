@@ -11,18 +11,28 @@ import {
     DocumentTextIcon,
     LifebuoyIcon,
     SparklesIcon,
+    EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
+
 import api from "../api/axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SideNavbarLayout = ({ children }) => {
+
+    const [editingChatId, setEditingChatId] = useState(null);
+    const [editingTitle, setEditingTitle] = useState("");
+
     const [collapsed, setCollapsed] = useState(false);
     const [closed, setClosed] = useState(window.innerWidth < 768);
+
     const [openMenu, setOpenMenu] = useState(false);
     const [openHelp, setOpenHelp] = useState(false);
+
+    const [conversations, setConversations] = useState([]);
+    const [openChatMenu, setOpenChatMenu] = useState(null);
 
     const [user, setUser] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
@@ -35,12 +45,11 @@ const SideNavbarLayout = ({ children }) => {
         const fetchUser = async () => {
             try {
                 const res = await api.get("/auth/me", {
-                    withCredentials: true, // important if using cookies
+                    withCredentials: true,
                 });
                 setUser(res.data.user);
             } catch (err) {
-                console.error("Auth error:", err);
-                navigate("/login"); // redirect if not authenticated
+                navigate("/login");
             } finally {
                 setLoadingUser(false);
             }
@@ -49,114 +58,124 @@ const SideNavbarLayout = ({ children }) => {
         fetchUser();
     }, [navigate]);
 
-    /* ===== Close dropdown on outside click ===== */
+    /* ================= FETCH CONVERSATIONS ================= */
+    const fetchConversations = async () => {
+        try {
+            const res = await api.get("/conversations", {
+                withCredentials: true,
+            });
+
+            setConversations(res.data.data || []);
+        } catch (err) {
+            console.error("Conversation fetch error", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchConversations();
+    }, []);
+
+    /* ================= CLOSE DROPDOWNS ================= */
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
                 setOpenMenu(false);
                 setOpenHelp(false);
             }
-        };
 
-        const handleEsc = (e) => {
-            if (e.key === "Escape") {
-                setOpenMenu(false);
-                setOpenHelp(false);
-            }
+            setOpenChatMenu(null);
         };
 
         window.addEventListener("click", handleClickOutside);
-        window.addEventListener("keydown", handleEsc);
 
-        return () => {
-            window.removeEventListener("click", handleClickOutside);
-            window.removeEventListener("keydown", handleEsc);
-        };
+        return () => window.removeEventListener("click", handleClickOutside);
     }, []);
 
-
-  useEffect(() => {
-  const handleResize = () => {
-    if (window.innerWidth < 768) {
-      setClosed(true);
-    } else {
-      setClosed(false);
-    }
-  };
-
-  window.addEventListener("resize", handleResize);
-
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
-
-
-    /* ================= CONFIRM LOGOUT ================= */
-    const logoutToastId = useRef(null);
-
-    const confirmLogout = () => {
-        // Prevent multiple toasts
-        if (toast.isActive(logoutToastId.current)) return;
-
-        logoutToastId.current = toast.info(
-            ({ closeToast }) => (
-                <div className="text-sm">
-                    <p className="mb-3 font-medium">
-                        Are you sure you want to logout?
-                    </p>
-                    <div className="flex justify-end gap-2">
-                        <button
-                            onClick={async () => {
-                                closeToast();
-                                logoutToastId.current = null;
-                                await handleLogout();
-                            }}
-                            className="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs"
-                        >
-                            Yes
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                closeToast();
-                                logoutToastId.current = null;
-                            }}
-                            className="px-3 py-1 bg-gray-600 hover:bg-gray-500 rounded text-white text-xs"
-                        >
-                            No
-                        </button>
-                    </div>
-                </div>
-            ),
-            {
-                position: "top-center",
-                autoClose: false,
-                closeOnClick: false,
-                closeButton: false,
-                draggable: false,
+    /* ================= RESPONSIVE ================= */
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 768) {
+                setClosed(true);
+            } else {
+                setClosed(false);
             }
-        );
-    };
+        };
 
-    /* ================= LOGOUT ================= */
-    /* ================= LOGOUT API ================= */
-    const handleLogout = async () => {
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    /* ================= CHAT ACTIONS ================= */
+
+    const renameConversation = async (id) => {
         try {
-            await api.post(
-                "/auth/logout",
-                {},
-                { withCredentials: true }
+            await api.patch(`/conversations/${id}`, {
+                title: editingTitle,
+            });
+
+            setConversations((prev) =>
+                prev.map((chat) =>
+                    chat._id === id ? { ...chat, title: editingTitle } : chat
+                )
             );
 
-            toast.success("Logged out successfully!");
-            setTimeout(() => {
-                navigate("/");
-            }, 800);
+            setEditingChatId(null);
+            setEditingTitle("");
+
+            toast.success("Chat renamed");
         } catch (err) {
-            toast.error("Logout failed. Try again.");
+            toast.error("Rename failed");
         }
     };
 
-    /* ================= GET INITIALS ================= */
+    const deleteConversation = async (id) => {
+        if (!window.confirm("Delete this chat?")) return;
+
+        try {
+            await api.delete(`/conversations/${id}`);
+
+            toast.success("Chat deleted");
+            fetchConversations();
+        } catch {
+            toast.error("Delete failed");
+        }
+    };
+
+    const archiveConversation = async (id) => {
+        try {
+            await api.patch(`/conversations/${id}/archive`);
+
+            toast.success("Chat archived");
+            fetchConversations();
+        } catch {
+            toast.error("Archive failed");
+        }
+    };
+
+
+    const handleOpenChat = (id) => {
+        navigate(`/new-chats/${id}`);
+
+        if (window.innerWidth < 768) {
+            setClosed(true);
+        }
+    };
+
+
+
+    /* ================= LOGOUT ================= */
+
+    const handleLogout = async () => {
+        try {
+            await api.post("/auth/logout", {}, { withCredentials: true });
+
+            toast.success("Logged out successfully!");
+            setTimeout(() => navigate("/"), 800);
+        } catch {
+            toast.error("Logout failed");
+        }
+    };
+
     const getInitials = () => {
         if (!user?.name) return "U";
         return user.name
@@ -167,10 +186,13 @@ const SideNavbarLayout = ({ children }) => {
             .slice(0, 2);
     };
 
+
+
+
     return (
         <div className="flex h-screen bg-gray-950 text-white relative overflow-hidden">
 
-            {/* ================= MOBILE BACKDROP ================= */}
+            {/* MOBILE BACKDROP */}
             {!closed && (
                 <div
                     onClick={() => setClosed(true)}
@@ -178,7 +200,7 @@ const SideNavbarLayout = ({ children }) => {
                 />
             )}
 
-            {/* ================= SIDEBAR ================= */}
+            {/* SIDEBAR */}
             <div
                 className={`
         fixed md:relative z-40 md:z-auto
@@ -188,53 +210,158 @@ const SideNavbarLayout = ({ children }) => {
         md:translate-x-0
       `}
             >
-                {/* ===== HEADER ===== */}
+                {/* HEADER */}
                 <div className="p-3 border-b border-gray-800">
                     <div className="flex items-center justify-between">
                         <button
                             onClick={() => setCollapsed(!collapsed)}
-                            className="p-2 hover:bg-gray-800 rounded-md transition"
+                            className="p-2 hover:bg-gray-800 rounded-md"
                         >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
 
-                        {!collapsed && (
-                            <span className="font-semibold text-sm">Chats</span>
-                        )}
+                        {!collapsed && <span className="font-semibold text-sm">Chats</span>}
                     </div>
+                    
 
-                    <button className="flex items-center gap-3 w-full p-2 mt-3 hover:bg-gray-800 rounded-md transition">
+<Link to="/new-chat">  
+                    <button className="flex items-center gap-3 w-full p-2 mt-3 hover:bg-gray-800 rounded-md">
                         <PlusIcon className="w-5 h-5" />
                         {!collapsed && <span className="text-sm">New Chat</span>}
                     </button>
+ </Link>
+
+
                 </div>
 
-                {/* ===== CHAT LIST ===== */}
-                <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                    {Array.from({ length: 20 }).map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => window.innerWidth < 768 && setClosed(true)}
-                            className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md transition text-gray-300"
+                {/* CHAT LIST */}
+                <div className="flex-1 overflow-y-auto p-2 space-y-1">
+
+                    {conversations.map((chat, index) => (
+
+                        <div
+                            key={chat._id}
+                            onClick={() => handleOpenChat(chat._id)}
+                            className="flex items-center justify-between group hover:bg-gray-800 rounded-md px-2 py-2"
                         >
-                            <ChatBubbleLeftRightIcon className="w-5 h-5" />
+                            <button
+                                onClick={() => window.innerWidth < 768 && setClosed(true)}
+                                className="flex items-center gap-3 flex-1 text-left"
+                            >
+                                <ChatBubbleLeftRightIcon className="w-5 h-5 text-gray-400" />
+
+                                {!collapsed && (
+                                    editingChatId === chat._id ? (
+                                        <input
+                                            autoFocus
+                                            value={editingTitle}
+                                            onChange={(e) => setEditingTitle(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            onMouseDown={(e) => e.stopPropagation()}
+                                            onKeyDown={(e) => {
+                                                e.stopPropagation();
+
+                                                // 🚀 Prevent space triggering parent button click
+                                                if (e.key === " ") {
+                                                    e.preventDefault();
+                                                    setEditingTitle((prev) => prev + " ");
+                                                    return;
+                                                }
+
+                                                if (e.key === "Enter") renameConversation(chat._id);
+                                                if (e.key === "Escape") setEditingChatId(null);
+                                            }}
+                                            onBlur={() => renameConversation(chat._id)}
+                                            className="bg-gray-800 text-sm px-2 py-1 rounded w-full outline-none"
+                                        />
+                                    ) : (
+                                        <span className="text-sm truncate">
+                                            {chat.title || `Chat ${index + 1}`}
+                                        </span>
+                                    )
+                                )}
+                            </button>
+
                             {!collapsed && (
-                                <span className="text-sm truncate">
-                                    Chat {index + 1}
-                                </span>
+                                <div className="relative">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setOpenChatMenu(
+                                                openChatMenu === chat._id ? null : chat._id
+                                            );
+                                        }}
+                                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-700"
+                                    >
+                                        <EllipsisVerticalIcon className="w-5 h-5" />
+                                    </button>
+
+                                    {openChatMenu === chat._id && (
+                                        <div className="absolute right-0 top-6 w-36 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
+
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setEditingChatId(chat._id);
+                                                    setEditingTitle(chat.title || "New Chat");
+                                                    setOpenChatMenu(null);
+                                                }}
+                                                className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-700"
+                                            >
+                                                Rename
+                                            </button>
+
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setOpenChatMenu(
+                                                        openChatMenu === chat._id ? null : chat._id
+                                                    );
+                                                    archiveConversation(chat._id);
+
+
+                                                }
+                                                }
+                                                className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-700"
+                                            >
+                                                Archive
+                                            </button>
+
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setOpenChatMenu(
+                                                        openChatMenu === chat._id ? null : chat._id
+                                                    );
+                                                    deleteConversation(chat._id);
+
+
+                                                }
+                                                }
+                                                className="block w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-gray-700"
+                                            >
+                                                Delete
+                                            </button>
+
+                                        </div>
+                                    )}
+                                </div>
                             )}
-                        </button>
+                        </div>
+
                     ))}
+
                 </div>
 
-                {/* ===== FOOTER USER SECTION ===== */}
+                {/* FOOTER USER SECTION */}
                 <div ref={menuRef} className="relative p-2 border-t border-gray-800">
+
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
                             setOpenMenu(!openMenu);
                         }}
-                        className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md transition"
+                        className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md"
                     >
                         <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-semibold">
                             {loadingUser ? "..." : getInitials()}
@@ -245,85 +372,35 @@ const SideNavbarLayout = ({ children }) => {
                                 <span className="text-sm font-medium">
                                     {loadingUser ? "Loading..." : user?.name}
                                 </span>
-                                <span className="text-xs text-gray-400">
-                                    Pro Plan
-                                </span>
+                                <span className="text-xs text-gray-400">Pro Plan</span>
                             </div>
                         )}
                     </button>
 
                     {openMenu && (
-                        <div className="absolute bottom-14 left-2 right-2 bg-gray-800 rounded-xl shadow-xl border border-gray-700 p-2 space-y-1">
+                        <div className="absolute bottom-14 left-2 right-2 bg-gray-800 rounded-xl border border-gray-700 p-2 space-y-1">
 
-                            {/* User Info */}
-                            <div className="flex items-center gap-3 p-2 border-b border-gray-700">
-                                <UserCircleIcon className="w-8 h-8 text-gray-300" />
-                                <div>
-                                    <p className="text-sm font-medium">{user?.name}</p>
-                                    <p className="text-xs text-gray-400">{user?.email}</p>
-                                </div>
-                            </div>
-
-                            <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md transition text-sm">
-                                <Cog6ToothIcon className="w-5 h-5" />
-                                Settings
-                            </button>
-
-                            {/* Help */}
-                            <div
-                                className="relative"
-                                onMouseEnter={() => setOpenHelp(true)}
-                                onMouseLeave={() => setOpenHelp(false)}
-                            >
-                                <button className="flex items-center justify-between w-full p-2 hover:bg-gray-700 rounded-md transition text-sm">
-                                    <div className="flex items-center gap-3">
-                                        <QuestionMarkCircleIcon className="w-5 h-5" />
-                                        Help
-                                    </div>
-                                    <ChevronRightIcon className="w-4 h-4" />
-                                </button>
-
-                                {openHelp && (
-                                    <div className="absolute top-0 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-2 space-y-1">
-                                        <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
-                                            <LifebuoyIcon className="w-5 h-5" />
-                                            Help Center
-                                        </button>
-
-                                        <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
-                                            <SparklesIcon className="w-5 h-5" />
-                                            Release Notes
-                                        </button>
-
-                                        <button className="flex items-center gap-3 w-full p-2 hover:bg-gray-700 rounded-md text-sm">
-                                            <DocumentTextIcon className="w-5 h-5" />
-                                            Terms & Conditions
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Logout */}
                             <button
-                                onClick={confirmLogout}
-                                className="flex items-center gap-3 w-full p-2 hover:bg-red-600/20 text-red-400 rounded-md transition text-sm"
+                                onClick={handleLogout}
+                                className="flex items-center gap-3 w-full p-2 hover:bg-red-600/20 text-red-400 rounded-md text-sm"
                             >
                                 <ArrowRightOnRectangleIcon className="w-5 h-5" />
                                 Logout
                             </button>
+
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* ================= MAIN CONTENT ================= */}
+            {/* MAIN CONTENT */}
             <div className="flex-1 flex flex-col w-full">
 
                 {/* MOBILE TOP BAR */}
                 <div className="md:hidden p-4 flex items-center justify-between border-b border-gray-800">
                     <button
                         onClick={() => setClosed(false)}
-                        className="p-2 hover:bg-gray-800 rounded-md transition"
+                        className="p-2 hover:bg-gray-800 rounded-md"
                     >
                         <Bars3Icon className="w-6 h-6" />
                     </button>
@@ -335,6 +412,8 @@ const SideNavbarLayout = ({ children }) => {
                     {children}
                 </div>
             </div>
+
+            <ToastContainer />
         </div>
     );
 };
