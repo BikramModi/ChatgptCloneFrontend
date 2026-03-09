@@ -27,7 +27,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SideNavbarLayout = ({ children }) => {
 
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+    const [activeChatId, setActiveChatId] = useState(null);
+    const [isNewChatActive, setIsNewChatActive] = useState(false);
 
     const [usageMetrics, setUsageMetrics] = useState(null);
     const [loadingUsage, setLoadingUsage] = useState(false);
@@ -68,25 +71,25 @@ const SideNavbarLayout = ({ children }) => {
 
 
     const [profile, setProfile] = useState(null);
-const [loadingProfile, setLoadingProfile] = useState(false);
+    const [loadingProfile, setLoadingProfile] = useState(false);
 
-const userId = user?._id;
+    const userId = user?._id;
 
-const fetchProfile = async () => {
-  try {
-    setLoadingProfile(true);
+    const fetchProfile = async () => {
+        try {
+            setLoadingProfile(true);
 
-    const res = await api.get(`/users/${userId}`, {
-      withCredentials: true,
-    });
+            const res = await api.get(`/users/${userId}`, {
+                withCredentials: true,
+            });
 
-    setProfile(res.data);
-  } catch (err) {
-    toast.error("Failed to load profile");
-  } finally {
-    setLoadingProfile(false);
-  }
-};
+            setProfile(res.data);
+        } catch (err) {
+            toast.error("Failed to load profile");
+        } finally {
+            setLoadingProfile(false);
+        }
+    };
 
 
 
@@ -100,8 +103,8 @@ const fetchProfile = async () => {
             fetchUsageMetrics();
         }
         if (activeTab === "profile") {
-    fetchProfile();
-  }
+            fetchProfile();
+        }
     }, [activeTab]);
 
     const isDark = preferences.theme === "dark";
@@ -323,6 +326,8 @@ const fetchProfile = async () => {
 
 
     const handleOpenChat = (id) => {
+        setActiveChatId(id);
+        setIsNewChatActive(false);
         navigate(`/new-chats/${id}`);
 
         if (window.innerWidth < 768) {
@@ -394,7 +399,15 @@ const fetchProfile = async () => {
 
 
                     <Link to="/new-chat">
-                        <button className="flex items-center gap-3 w-full p-2 mt-3 hover:bg-gray-800 rounded-md">
+                        <button
+                            onClick={() => {
+                                setIsNewChatActive(true);
+                                setActiveChatId(null);
+                            }}
+                            className={`flex items-center gap-3 w-full p-2 mt-3 rounded-md
+${isNewChatActive ? "bg-gray-700" : "hover:bg-gray-800"}
+`}
+                        >
                             <PlusIcon className="w-5 h-5" />
                             {!collapsed && <span className="text-sm">New Chat</span>}
                         </button>
@@ -411,7 +424,9 @@ const fetchProfile = async () => {
                         <div
                             key={chat._id}
                             onClick={() => handleOpenChat(chat._id)}
-                            className="flex items-center justify-between group hover:bg-gray-800 rounded-md px-2 py-2"
+                            className={`flex items-center justify-between group rounded-md px-2 py-2
+${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
+`}
                         >
                             <button
                                 onClick={() => window.innerWidth < 768 && setClosed(true)}
@@ -445,7 +460,9 @@ const fetchProfile = async () => {
                                         />
                                     ) : (
                                         <span className="text-sm truncate">
-                                            {chat.title || `Chat ${index + 1}`}
+                                            {chat.title && chat.title.trim() !== "" && chat.title !== "New Chat"
+                                                ? chat.title
+                                                : `Chat ${conversations.length - index}`}
                                         </span>
                                     )
                                 )}
@@ -472,7 +489,7 @@ const fetchProfile = async () => {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setEditingChatId(chat._id);
-                                                    setEditingTitle(chat.title || "New Chat");
+                                                    setEditingTitle(chat.title || `Chat ${index + 1}`);
                                                     setOpenChatMenu(null);
                                                 }}
                                                 className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-700"
@@ -628,12 +645,47 @@ const fetchProfile = async () => {
 
                             {/* LOGOUT */}
                             <button
-                                onClick={handleLogout}
+                                onClick={() => setShowLogoutModal(true)}
                                 className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-600/20"
                             >
                                 <ArrowRightOnRectangleIcon className="w-5 h-5" />
                                 Logout
                             </button>
+                            {showLogoutModal && (
+                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+                                    <div className="bg-gray-900 rounded-xl p-6 w-80 shadow-xl">
+
+                                        <h2 className="text-lg font-semibold mb-2">
+                                            Log out
+                                        </h2>
+
+                                        <p className="text-sm text-gray-400 mb-6">
+                                            Are you sure you want to log out of your account?
+                                        </p>
+
+                                        <div className="flex justify-end gap-3">
+
+                                            <button
+                                                onClick={() => setShowLogoutModal(false)}
+                                                className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg"
+                                            >
+                                                Cancel
+                                            </button>
+
+                                            <button
+                                                onClick={handleLogout}
+                                                className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 rounded-lg"
+                                            >
+                                                Log out
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            )}
 
                         </div>
                     )}
@@ -721,80 +773,80 @@ const fetchProfile = async () => {
                         <div className="flex-1 p-6 overflow-y-auto">
 
                             {/* PROFILE */}
-                           {activeTab === "profile" && (
+                            {activeTab === "profile" && (
 
-loadingProfile ? (
+                                loadingProfile ? (
 
-<div className="flex items-center justify-center h-full">
-  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
-</div>
+                                    <div className="flex items-center justify-center h-full">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+                                    </div>
 
-) : (
+                                ) : (
 
-<div className="space-y-6">
+                                    <div className="space-y-6">
 
-<h2 className="text-lg font-semibold">Profile</h2>
+                                        <h2 className="text-lg font-semibold">Profile</h2>
 
-<div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-6 rounded-xl`}>
+                                        <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-6 rounded-xl`}>
 
-{/* HEADER */}
-<div className="flex items-center justify-between mb-6">
-<div>
-<p className="text-xl font-semibold">{profile?.name}</p>
-<p className="text-sm text-gray-400">{profile?.email}</p>
-</div>
+                                            {/* HEADER */}
+                                            <div className="flex items-center justify-between mb-6">
+                                                <div>
+                                                    <p className="text-xl font-semibold">{profile?.name}</p>
+                                                    <p className="text-sm text-gray-400">{profile?.email}</p>
+                                                </div>
 
-<span className={`text-xs px-3 py-1 rounded-full
+                                                <span className={`text-xs px-3 py-1 rounded-full
 ${profile?.status === "active"
-? "bg-green-500/20 text-green-400"
-: "bg-red-500/20 text-red-400"}
+                                                        ? "bg-green-500/20 text-green-400"
+                                                        : "bg-red-500/20 text-red-400"}
 `}>
-{profile?.status}
-</span>
-</div>
+                                                    {profile?.status}
+                                                </span>
+                                            </div>
 
 
-{/* INFO GRID */}
-<div className="grid md:grid-cols-2 gap-4 text-sm">
+                                            {/* INFO GRID */}
+                                            <div className="grid md:grid-cols-2 gap-4 text-sm">
 
-<div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-<p className="text-gray-400 text-xs">Role</p>
-<p className="mt-1 font-medium capitalize">{profile?.role}</p>
-</div>
+                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
+                                                    <p className="text-gray-400 text-xs">Role</p>
+                                                    <p className="mt-1 font-medium capitalize">{profile?.role}</p>
+                                                </div>
 
-<div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-<p className="text-gray-400 text-xs">Email Verified</p>
-<p className="mt-1 font-medium">
-{profile?.emailVerified ? "Yes ✅" : "No ❌"}
-</p>
-</div>
+                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
+                                                    <p className="text-gray-400 text-xs">Email Verified</p>
+                                                    <p className="mt-1 font-medium">
+                                                        {profile?.emailVerified ? "Yes ✅" : "No ❌"}
+                                                    </p>
+                                                </div>
 
-<div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-<p className="text-gray-400 text-xs">Member Since</p>
-<p className="mt-1 font-medium">
-{profile?.createdAt
-? new Date(profile.createdAt).toLocaleDateString()
-: "-"}
-</p>
-</div>
+                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
+                                                    <p className="text-gray-400 text-xs">Member Since</p>
+                                                    <p className="mt-1 font-medium">
+                                                        {profile?.createdAt
+                                                            ? new Date(profile.createdAt).toLocaleDateString()
+                                                            : "-"}
+                                                    </p>
+                                                </div>
 
-<div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-<p className="text-gray-400 text-xs">Last Login</p>
-<p className="mt-1 font-medium">
-{profile?.lastLoginAt
-? new Date(profile.lastLoginAt).toLocaleString()
-: "-"}
-</p>
-</div>
+                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
+                                                    <p className="text-gray-400 text-xs">Last Login</p>
+                                                    <p className="mt-1 font-medium">
+                                                        {profile?.lastLoginAt
+                                                            ? new Date(profile.lastLoginAt).toLocaleString()
+                                                            : "-"}
+                                                    </p>
+                                                </div>
 
-</div>
+                                            </div>
 
-</div>
+                                        </div>
 
-</div>
+                                    </div>
 
-)
-)}
+                                )
+                            )}
 
                             {/* PLAN */}
                             {activeTab === "plan" && (

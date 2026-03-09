@@ -311,6 +311,11 @@ console.log("Fetched user for protected route:", res.data.user);
 
             <Route path="/admin-dashboard" element={<SellerHomePage />} />
             <Route path="/seller/dashboard" element={<SellerHomePage />} />
+<Route path="/users" element={<UsersPage />} />
+
+
+
+
             <Route path="/seller/category" element={<SellerCategoryPage />} />
             <Route path="/create-category" element={<CategoryCreationPage />} />
             <Route path="/view-product/:id" element={<ViewProductPage />} />
@@ -323,7 +328,7 @@ console.log("Fetched user for protected route:", res.data.user);
             <Route path="/order-itemsss/:id" element={<OrderItemPages />} />
             <Route path="/update-status/:id" element={<UpdateStatusPage />} />
 
-            <Route path="/users" element={<UsersPage />} />
+            
 
             <Route path="/seller-reviews/:id" element={<AddReviewPage />} />
 

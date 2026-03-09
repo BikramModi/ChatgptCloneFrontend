@@ -1,58 +1,133 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
+import { toast } from "react-toastify";
 
-
-import { Users, Tags } from "lucide-react";
 const SellerHomePage = () => {
+  const [flags, setFlags] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch flagged messages
+  const fetchFlags = async () => {
+    try {
+      setLoading(true);
+
+      const res = await api.get("/flags");
+
+      // API returns { success:true, data:[...] }
+      setFlags(res.data?.data || []);
+
+      toast.success("Flags loaded successfully ✅");
+    } catch (err) {
+      console.error("Failed to fetch flags", err);
+      toast.error("Failed to load flagged content");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlags();
+  }, []);
+
+  // Update moderation action
+  const updateAction = async (flagId, actionTaken) => {
+    try {
+      await api.patch(`/flags/${flagId}`, { actionTaken });
+
+      setFlags((prev) =>
+        prev.map((flag) =>
+          flag._id === flagId ? { ...flag, actionTaken } : flag
+        )
+      );
+
+      toast.success("Moderation action updated ✅");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Update failed");
+    }
+  };
+
+  if (loading) {
     return (
-        <>
-            <div className="h-screen flex items-center justify-center bg-gray-600 px-6">
-                <div className="max-w-4xl w-full mb-40 bg-white rounded-2xl shadow-lg p-10 text-center">
+      <div className="h-screen flex items-center justify-center text-white text-2xl font-bold">
+        Loading flagged messages...
+      </div>
+    );
+  }
 
-                    {/* Title */}
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">
-                        Welcome, Seller 👋
-                    </h1>
+  return (
+    <div className="max-w-5xl mx-auto p-6 space-y-4">
 
-                    {/* Subtitle */}
-                    <p className="text-gray-600 text-lg mb-10">
-                        Manage your products, track your orders, and grow your business with ease.
-                    </p>
+      <h2 className="text-2xl font-bold text-white text-center">
+        Flagged Content Moderation
+      </h2>
 
-                    {/* Actions */}
-                    <div className="grid sm:grid-cols-3 gap-6">
+      {flags.length === 0 ? (
+        <p className="text-gray-400 text-center">
+          No flagged messages found.
+        </p>
+      ) : (
+        flags.map((flag) => (
+          <div
+            key={flag._id}
+            className="bg-[#2f2f2f] border border-gray-700 rounded-xl p-4 flex justify-between items-start hover:bg-[#343434] transition"
+          >
+            {/* Message Info */}
+            <div className="space-y-2 max-w-[75%]">
 
-                        <Link
-                            to="/users"
-                            className="flex justify-center items-center gap-3 bg-green-600 text-white py-5 rounded-xl font-semibold text-lg hover:bg-green-700 transition"
-                        >
-                             <Users size={18} /> Users
-                        </Link>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-500">Message:</span>{" "}
+                {flag?.messageId?.content || "Message unavailable"}
+              </p>
 
-                        <Link
-                            to="/seller/category"
-                            className="flex justify-center items-center gap-3 bg-blue-600 text-white py-5 rounded-xl font-semibold text-lg hover:bg-blue-700 transition"
-                        >
-                            <Tags size={18} /> My Categories
-                        </Link>
+              <div className="flex gap-2 flex-wrap">
 
-                        <Link
-                            to="/order"
-                            className="bg-purple-600 text-white py-5 rounded-xl font-semibold text-lg hover:bg-purple-700 transition"
-                        >
-                            🧾 My Orders
-                        </Link>
+                {/* Category */}
+                <span className="text-xs px-2 py-1 rounded bg-[#404040] text-gray-200">
+                  {flag.category}
+                </span>
 
-                    </div>
+                {/* Severity */}
+                <span
+                  className={`text-xs px-2 py-1 rounded ${
+                    flag.severity === "high"
+                      ? "bg-red-600 text-white"
+                      : flag.severity === "medium"
+                      ? "bg-yellow-500 text-black"
+                      : "bg-green-600 text-white"
+                  }`}
+                >
+                  {flag.severity}
+                </span>
 
-                </div>
+                {/* Action Taken */}
+                <span className="text-xs px-2 py-1 rounded bg-[#404040] text-gray-300">
+                  {flag.actionTaken}
+                </span>
 
-                
+              </div>
 
+              <p className="text-xs text-gray-500">
+                {new Date(flag.createdAt).toLocaleString()}
+              </p>
             </div>
 
-          
-        </>
-    );
+            {/* Moderation Action */}
+            <select
+              value={flag.actionTaken}
+              onChange={(e) =>
+                updateAction(flag._id, e.target.value)
+              }
+              className="bg-[#202123] border border-gray-600 text-gray-200 text-sm px-3 py-1.5 rounded-md"
+            >
+              <option value="none">None</option>
+              <option value="masked">Mask</option>
+              <option value="blocked">Block</option>
+            </select>
+          </div>
+        ))
+      )}
+    </div>
+  );
 };
 
 export default SellerHomePage;
