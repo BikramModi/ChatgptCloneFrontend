@@ -14,7 +14,36 @@ import {
     EllipsisVerticalIcon,
     ChartBarIcon,
     AdjustmentsHorizontalIcon,
+    FireIcon,
+
+
+    ShieldCheckIcon,
+    CheckBadgeIcon,
+    CalendarDaysIcon,
+    ClockIcon,
+
+
+
+    ExclamationTriangleIcon,
+    XCircleIcon,
+
+    CpuChipIcon,
+    CurrencyDollarIcon,
+
+
+
+
+
+    PaintBrushIcon,
+    CheckIcon,
+
+  XMarkIcon,
+
+
+
 } from "@heroicons/react/24/outline";
+
+import { ZapIcon, } from "lucide-react";
 
 import api from "../api/axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -364,7 +393,7 @@ const SideNavbarLayout = ({ children }) => {
 
 
     return (
-        <div className="flex h-screen bg-gray-950 text-white relative overflow-hidden">
+        <div className="flex h-screen bg-gray-950 text-white relative overflow-hidden text-xs sm:text-sm md:text-base">
 
             {/* MOBILE BACKDROP */}
             {!closed && (
@@ -379,60 +408,87 @@ const SideNavbarLayout = ({ children }) => {
                 className={`
         fixed md:relative z-40 md:z-auto
         bg-gray-900 transition-all duration-300 flex flex-col h-full
-        ${collapsed ? "w-16" : "w-64"}
+
+        text-xs sm:text-sm md:text-base
+
+        ${collapsed ? "w-14 sm:w-16" : "w-56 sm:w-64"}
+
         ${closed ? "-translate-x-full" : "translate-x-0"}
         md:translate-x-0
       `}
             >
                 {/* HEADER */}
-                <div className="p-3 border-b border-gray-800">
-                    <div className="flex items-center justify-between">
-                        <button
-                            onClick={() => setCollapsed(!collapsed)}
-                            className="p-2 hover:bg-gray-800 rounded-md"
-                        >
-                            <Bars3Icon className="w-6 h-6" />
-                        </button>
+<div className="p-2 sm:p-3 border-b border-gray-800">
 
-                        {!collapsed && <span className="font-semibold text-sm">Chats</span>}
-                    </div>
+  {/* TOP ROW */}
+  <div className="flex items-center gap-2">
 
+    <button
+      onClick={() => setCollapsed(!collapsed)}
+      className="p-2 rounded-md hover:bg-gray-800 transition"
+    >
+      <Bars3Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+    </button>
 
-                    <Link to="/new-chat">
-                        <button
-                            onClick={() => {
-                                setIsNewChatActive(true);
-                                setActiveChatId(null);
-                            }}
-                            className={`flex items-center gap-3 w-full p-2 mt-3 rounded-md
-${isNewChatActive ? "bg-gray-700" : "hover:bg-gray-800"}
-`}
-                        >
-                            <PlusIcon className="w-5 h-5" />
-                            {!collapsed && <span className="text-sm">New Chat</span>}
-                        </button>
-                    </Link>
+    {!collapsed && (
+      <span className="hidden sm:block font-semibold text-sm md:text-base">
+        Chats
+      </span>
+    )}
 
+  </div>
 
-                </div>
+  {/* NEW CHAT BUTTON */}
+  <Link to="/new-chat">
+    <button
+      onClick={() => {
+        setIsNewChatActive(true);
+        setActiveChatId(null);
+      }}
+      className={`flex items-center gap-2 sm:gap-3 w-full mt-3
+      px-3 py-2.5 sm:py-3
+      rounded-lg
+      text-xs sm:text-sm
+      font-medium
+      transition
+      ${
+        isNewChatActive
+          ? "bg-gray-700"
+          : "hover:bg-gray-800"
+      }`}
+    >
+
+      <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+
+      {!collapsed && (
+        <span className="truncate">
+          New Chat
+        </span>
+      )}
+
+    </button>
+  </Link>
+
+</div>
 
                 {/* CHAT LIST */}
-                <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1">
 
                     {conversations.map((chat, index) => (
 
                         <div
                             key={chat._id}
                             onClick={() => handleOpenChat(chat._id)}
-                            className={`flex items-center justify-between group rounded-md px-2 py-2
-${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
-`}
+                            className={`flex items-center justify-between group rounded-md px-2 sm:px-3 py-2
+            ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
+            `}
                         >
+
                             <button
                                 onClick={() => window.innerWidth < 768 && setClosed(true)}
-                                className="flex items-center gap-3 flex-1 text-left"
+                                className="flex items-center gap-2 sm:gap-3 flex-1 text-left"
                             >
-                                <ChatBubbleLeftRightIcon className="w-5 h-5 text-gray-400" />
+                                <ChatBubbleLeftRightIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
 
                                 {!collapsed && (
                                     editingChatId === chat._id ? (
@@ -445,7 +501,6 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                             onKeyDown={(e) => {
                                                 e.stopPropagation();
 
-                                                // 🚀 Prevent space triggering parent button click
                                                 if (e.key === " ") {
                                                     e.preventDefault();
                                                     setEditingTitle((prev) => prev + " ");
@@ -456,10 +511,10 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                                 if (e.key === "Escape") setEditingChatId(null);
                                             }}
                                             onBlur={() => renameConversation(chat._id)}
-                                            className="bg-gray-800 text-sm px-2 py-1 rounded w-full outline-none"
+                                            className="bg-gray-800 text-xs sm:text-sm px-2 py-1 rounded w-full outline-none"
                                         />
                                     ) : (
-                                        <span className="text-sm truncate">
+                                        <span className="text-xs sm:text-sm truncate">
                                             {chat.title && chat.title.trim() !== "" && chat.title !== "New Chat"
                                                 ? chat.title
                                                 : `Chat ${conversations.length - index}`}
@@ -470,6 +525,7 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
 
                             {!collapsed && (
                                 <div className="relative">
+
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -479,11 +535,11 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                         }}
                                         className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-700"
                                     >
-                                        <EllipsisVerticalIcon className="w-5 h-5" />
+                                        <EllipsisVerticalIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </button>
 
                                     {openChatMenu === chat._id && (
-                                        <div className="absolute right-0 top-6 w-36 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
+                                        <div className="absolute right-0 top-6 w-32 sm:w-36 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
 
                                             <button
                                                 onClick={(e) => {
@@ -492,7 +548,7 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                                     setEditingTitle(chat.title || `Chat ${index + 1}`);
                                                     setOpenChatMenu(null);
                                                 }}
-                                                className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-700"
+                                                className="block w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-700"
                                             >
                                                 Rename
                                             </button>
@@ -504,11 +560,8 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                                         openChatMenu === chat._id ? null : chat._id
                                                     );
                                                     archiveConversation(chat._id);
-
-
-                                                }
-                                                }
-                                                className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-700"
+                                                }}
+                                                className="block w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-700"
                                             >
                                                 Archive
                                             </button>
@@ -520,19 +573,18 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                                         openChatMenu === chat._id ? null : chat._id
                                                     );
                                                     deleteConversation(chat._id);
-
-
-                                                }
-                                                }
-                                                className="block w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-gray-700"
+                                                }}
+                                                className="block w-full text-left px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-gray-700"
                                             >
                                                 Delete
                                             </button>
 
                                         </div>
                                     )}
+
                                 </div>
                             )}
+
                         </div>
 
                     ))}
@@ -540,31 +592,35 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                 </div>
 
                 {/* FOOTER USER SECTION */}
-                <div ref={menuRef} className="relative p-2 border-t border-gray-800">
+                <div ref={menuRef} className="relative p-2 sm:p-3 border-t border-gray-800">
 
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
                             setOpenMenu(!openMenu);
                         }}
-                        className="flex items-center gap-3 w-full p-2 hover:bg-gray-800 rounded-md"
+                        className="flex items-center gap-2 sm:gap-3 w-full p-2 sm:p-3 hover:bg-gray-800 rounded-md"
                     >
-                        <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-semibold">
+
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs sm:text-sm font-semibold">
                             {loadingUser ? "..." : getInitials()}
                         </div>
 
                         {!collapsed && (
                             <div className="flex flex-col items-start text-left">
-                                <span className="text-sm font-medium">
+                                <span className="text-xs sm:text-sm font-medium">
                                     {loadingUser ? "Loading..." : user?.name}
                                 </span>
-                                <span className="text-xs text-gray-400">Free</span>
+                                <span className="text-[10px] sm:text-xs text-gray-400">
+                                    Free
+                                </span>
                             </div>
                         )}
+
                     </button>
 
                     {openMenu && (
-                        <div className="absolute bottom-14 left-2 right-2 bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
+                        <div className="absolute bottom-14 left-2 right-2 sm:left-3 sm:right-3 bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
 
                             {/* USER INFO */}
                             <button
@@ -573,16 +629,18 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                     setActiveTab("profile");
                                     setOpenMenu(false);
                                 }}
-                                className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-700"
+                                className="flex items-center gap-2 sm:gap-3 w-full px-3 py-2 text-xs sm:text-sm hover:bg-gray-700"
                             >
 
-                                <div className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-semibold">
+                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-indigo-500 flex items-center justify-center text-xs sm:text-sm font-semibold">
                                     {getInitials()}
                                 </div>
 
                                 <div className="flex flex-col">
-                                    <span className="text-sm font-medium">{user?.name}</span>
-                                    <span className="text-xs text-gray-400">Free Plan</span>
+                                    <span className="text-xs sm:text-sm font-medium">{user?.name}</span>
+                                    <span className="text-[10px] sm:text-xs text-gray-400">
+                                        Free Plan
+                                    </span>
                                 </div>
 
                             </button>
@@ -594,23 +652,22 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                     setActiveTab("profile");
                                     setOpenMenu(false);
                                 }}
-                                className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-700"
+                                className="flex items-center gap-2 sm:gap-3 w-full px-3 py-2 text-xs sm:text-sm hover:bg-gray-700"
                             >
-                                <Cog6ToothIcon className="w-5 h-5 text-gray-400" />
+                                <Cog6ToothIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                                 Settings
                             </button>
 
                             {/* USAGE */}
-
                             <button
                                 onClick={() => {
                                     setOpenSettings(true);
                                     setActiveTab("usage");
                                     setOpenMenu(false);
                                 }}
-                                className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-700"
+                                className="flex items-center gap-2 sm:gap-3 w-full px-3 py-2 text-xs sm:text-sm hover:bg-gray-700"
                             >
-                                <ChartBarIcon className="w-5 h-5 text-gray-400" />
+                                <ChartBarIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                                 Usage Metrics
                             </button>
 
@@ -621,9 +678,9 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                     setActiveTab("preferences");
                                     setOpenMenu(false);
                                 }}
-                                className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-700"
+                                className="flex items-center gap-2 sm:gap-3 w-full px-3 py-2 text-xs sm:text-sm hover:bg-gray-700"
                             >
-                                <AdjustmentsHorizontalIcon className="w-5 h-5 text-gray-400" />
+                                <AdjustmentsHorizontalIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                                 User Preferences
                             </button>
 
@@ -634,9 +691,9 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                                     setActiveTab("plan");
                                     setOpenMenu(false);
                                 }}
-                                className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-700"
+                                className="flex items-center gap-2 sm:gap-3 w-full px-3 py-2 text-xs sm:text-sm hover:bg-gray-700"
                             >
-                                <SparklesIcon className="w-5 h-5 text-gray-400" />
+                                <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                                 Upgrade Plan
                             </button>
 
@@ -646,75 +703,100 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                             {/* LOGOUT */}
                             <button
                                 onClick={() => setShowLogoutModal(true)}
-                                className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-600/20"
+                                className="flex items-center gap-2 sm:gap-3 w-full px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-red-600/20"
                             >
-                                <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                                <ArrowRightOnRectangleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 Logout
                             </button>
-                            {showLogoutModal && (
-                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-                                    <div className="bg-gray-900 rounded-xl p-6 w-80 shadow-xl">
+                            {/* LOGOUT MODAL */}
+                           {showLogoutModal && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                                        <h2 className="text-lg font-semibold mb-2">
-                                            Log out
-                                        </h2>
+    <div
+      className={`${
+        isDark ? "bg-gray-900 text-white" : "bg-white text-black"
+      } rounded-xl p-5 sm:p-6 w-full max-w-xs sm:max-w-sm shadow-xl`}
+    >
 
-                                        <p className="text-sm text-gray-400 mb-6">
-                                            Are you sure you want to log out of your account?
-                                        </p>
+      {/* HEADER */}
+      <div className="flex items-center gap-2 mb-3">
 
-                                        <div className="flex justify-end gap-3">
+        <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-400"/>
 
-                                            <button
-                                                onClick={() => setShowLogoutModal(false)}
-                                                className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg"
-                                            >
-                                                Cancel
-                                            </button>
+        <h2 className="text-sm sm:text-base md:text-lg font-semibold">
+          Log out
+        </h2>
 
-                                            <button
-                                                onClick={handleLogout}
-                                                className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 rounded-lg"
-                                            >
-                                                Log out
-                                            </button>
+      </div>
 
-                                        </div>
+      {/* MESSAGE */}
+      <p className="text-xs sm:text-sm text-gray-400 mb-6">
+        Are you sure you want to log out of your account?
+      </p>
 
-                                    </div>
+      {/* BUTTONS */}
+      <div className="flex justify-end gap-3">
 
-                                </div>
-                            )}
+        <button
+          onClick={() => setShowLogoutModal(false)}
+          className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm
+          ${isDark
+            ? "bg-gray-800 hover:bg-gray-700"
+            : "bg-gray-200 hover:bg-gray-300"}`}
+        >
+          <XMarkIcon className="w-4 h-4"/>
+          Cancel
+        </button>
 
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white"
+        >
+          <ArrowRightOnRectangleIcon className="w-4 h-4"/>
+          Log out
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
                         </div>
                     )}
+
                 </div>
             </div>
 
             {/* MAIN CONTENT */}
-            <div className="flex-1 flex flex-col w-full">
+            <div className="flex-1 flex flex-col w-full text-xs sm:text-sm md:text-base">
 
                 {/* MOBILE TOP BAR */}
-                <div className="md:hidden p-4 flex items-center justify-between border-b border-gray-800">
+                <div className="md:hidden p-3 sm:p-4 flex items-center justify-between border-b border-gray-800">
+
                     <button
                         onClick={() => setClosed(false)}
                         className="p-2 hover:bg-gray-800 rounded-md"
                     >
-                        <Bars3Icon className="w-6 h-6" />
+                        <Bars3Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                     </button>
 
-                    <span className="text-sm font-medium">Chats</span>
+                    <span className="text-xs sm:text-sm font-medium">
+                        Chats
+                    </span>
+
                 </div>
 
-                <div className="flex-1 overflow-auto p-4 md:p-6">
+                <div className="flex-1 overflow-auto p-3 sm:p-4 md:p-6">
                     {children}
                 </div>
+
             </div>
 
             <ToastContainer />
             {openSettings && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
 
                     {/* BACKDROP */}
                     <div
@@ -723,54 +805,55 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
                     />
 
                     {/* MODAL */}
-                    <div className="relative bg-gray-900 w-[95%] md:w-[700px] h-[500px] rounded-xl shadow-2xl border border-gray-700 flex">
+                    <div className="relative bg-gray-900 w-full max-w-5xl h-[90vh] rounded-xl shadow-2xl border border-gray-700 flex flex-col md:flex-row overflow-hidden text-xs sm:text-sm md:text-base">
 
-                        {/* LEFT MENU */}
-                        <div className="w-56 border-r border-gray-800 p-4 space-y-2">
+                        {/* SIDEBAR / MOBILE TABS */}
+                        <div className="md:w-60 border-b md:border-b-0 md:border-r border-gray-800 p-3 flex md:flex-col gap-2 overflow-x-auto">
 
-                            <div className="text-sm font-semibold mb-4 text-gray-300">
+                            <div className="hidden md:block text-sm font-semibold mb-2 text-gray-300">
                                 Settings
                             </div>
 
                             <button
                                 onClick={() => setActiveTab("profile")}
-                                className={`flex items-center gap-3 w-full p-2 text-sm rounded-md ${activeTab === "profile" ? "bg-gray-800" : "hover:bg-gray-800"
+                                className={`flex items-center gap-2 md:gap-3 px-3 py-2 rounded-md whitespace-nowrap ${activeTab === "profile" ? "bg-gray-800" : "hover:bg-gray-800"
                                     }`}
                             >
-                                <UserCircleIcon className="w-5 h-5" />
-                                Profile
+                                <UserCircleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="hidden sm:inline">Profile</span>
                             </button>
 
                             <button
                                 onClick={() => setActiveTab("plan")}
-                                className={`flex items-center gap-3 w-full p-2 text-sm rounded-md ${activeTab === "plan" ? "bg-gray-800" : "hover:bg-gray-800"
+                                className={`flex items-center gap-2 md:gap-3 px-3 py-2 rounded-md whitespace-nowrap ${activeTab === "plan" ? "bg-gray-800" : "hover:bg-gray-800"
                                     }`}
                             >
-                                <SparklesIcon className="w-5 h-5" />
-                                My Plan
+                                <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="hidden sm:inline">Upgrade Plan</span>
                             </button>
 
                             <button
                                 onClick={() => setActiveTab("usage")}
-                                className={`flex items-center gap-3 w-full p-2 text-sm rounded-md ${activeTab === "usage" ? "bg-gray-800" : "hover:bg-gray-800"
+                                className={`flex items-center gap-2 md:gap-3 px-3 py-2 rounded-md whitespace-nowrap ${activeTab === "usage" ? "bg-gray-800" : "hover:bg-gray-800"
                                     }`}
                             >
-                                <ChartBarIcon className="w-5 h-5" />
-                                Usage
+                                <ChartBarIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="hidden sm:inline">Usage</span>
                             </button>
 
                             <button
                                 onClick={() => setActiveTab("preferences")}
-                                className={`flex items-center gap-3 w-full p-2 text-sm rounded-md ${activeTab === "data" ? "bg-gray-800" : "hover:bg-gray-800"
+                                className={`flex items-center gap-2 md:gap-3 px-3 py-2 rounded-md whitespace-nowrap ${activeTab === "preferences" ? "bg-gray-800" : "hover:bg-gray-800"
                                     }`}
                             >
-                                <DocumentTextIcon className="w-5 h-5" />
-                                User Preferences
+                                <DocumentTextIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="hidden sm:inline">Preferences</span>
                             </button>
 
                         </div>
-                        {/* RIGHT CONTENT */}
-                        <div className="flex-1 p-6 overflow-y-auto">
+
+                        {/* CONTENT AREA */}
+                        <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
 
                             {/* PROFILE */}
                             {activeTab === "profile" && (
@@ -785,58 +868,116 @@ ${activeChatId === chat._id ? "bg-gray-700" : "hover:bg-gray-800"}
 
                                     <div className="space-y-6">
 
-                                        <h2 className="text-lg font-semibold">Profile</h2>
+                                        <h2 className="text-base sm:text-lg md:text-xl font-semibold flex items-center gap-2">
+                                            <UserCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
+                                            Profile
+                                        </h2>
 
-                                        <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-6 rounded-xl`}>
+                                        <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 sm:p-6 rounded-xl`}>
 
                                             {/* HEADER */}
-                                            <div className="flex items-center justify-between mb-6">
-                                                <div>
-                                                    <p className="text-xl font-semibold">{profile?.name}</p>
-                                                    <p className="text-sm text-gray-400">{profile?.email}</p>
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+
+                                                <div className="flex items-center gap-3">
+
+                                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold text-sm sm:text-base">
+                                                        {profile?.name?.charAt(0)}
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-base sm:text-lg font-semibold">
+                                                            {profile?.name}
+                                                        </p>
+
+                                                        <p className="text-xs sm:text-sm text-gray-400">
+                                                            {profile?.email}
+                                                        </p>
+                                                    </div>
+
                                                 </div>
 
-                                                <span className={`text-xs px-3 py-1 rounded-full
-${profile?.status === "active"
+                                                <span
+                                                    className={`text-xs px-3 py-1 rounded-full w-fit flex items-center gap-1 ${profile?.status === "active"
                                                         ? "bg-green-500/20 text-green-400"
-                                                        : "bg-red-500/20 text-red-400"}
-`}>
-                                                    {profile?.status}
+                                                        : "bg-red-500/20 text-red-400"
+                                                        }`}
+                                                >
+                                                    {profile?.status === "active" ? "● Active" : "● Inactive"}
                                                 </span>
+
                                             </div>
 
-
                                             {/* INFO GRID */}
-                                            <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-                                                    <p className="text-gray-400 text-xs">Role</p>
-                                                    <p className="mt-1 font-medium capitalize">{profile?.role}</p>
+                                                {/* ROLE */}
+                                                <div className="bg-gray-700 p-4 rounded-lg flex items-start gap-3">
+
+                                                    <ShieldCheckIcon className="w-5 h-5 text-indigo-400 mt-1" />
+
+                                                    <div>
+                                                        <p className="text-gray-400 text-xs">Role</p>
+                                                        <p className="font-medium mt-1 capitalize text-sm sm:text-base">
+                                                            {profile?.role}
+                                                        </p>
+                                                    </div>
+
                                                 </div>
 
-                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-                                                    <p className="text-gray-400 text-xs">Email Verified</p>
-                                                    <p className="mt-1 font-medium">
-                                                        {profile?.emailVerified ? "Yes ✅" : "No ❌"}
-                                                    </p>
+                                                {/* EMAIL VERIFIED */}
+                                                <div className="bg-gray-700 p-4 rounded-lg flex items-start gap-3">
+
+                                                    <CheckBadgeIcon className="w-5 h-5 text-green-400 mt-1" />
+
+                                                    <div>
+                                                        <p className="text-gray-400 text-xs">Email Verified</p>
+
+                                                        <p className="mt-1 text-sm sm:text-base">
+                                                            {profile?.emailVerified ? "Yes" : "No"}
+                                                        </p>
+
+                                                    </div>
+
                                                 </div>
 
-                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-                                                    <p className="text-gray-400 text-xs">Member Since</p>
-                                                    <p className="mt-1 font-medium">
-                                                        {profile?.createdAt
-                                                            ? new Date(profile.createdAt).toLocaleDateString()
-                                                            : "-"}
-                                                    </p>
+                                                {/* MEMBER SINCE */}
+                                                <div className="bg-gray-700 p-4 rounded-lg flex items-start gap-3">
+
+                                                    <CalendarDaysIcon className="w-5 h-5 text-indigo-400 mt-1" />
+
+                                                    <div>
+                                                        <p className="text-gray-400 text-xs">Member Since</p>
+
+                                                        <p className="mt-1 text-sm sm:text-base">
+
+                                                            {profile?.createdAt
+                                                                ? new Date(profile.createdAt).toLocaleDateString()
+                                                                : "-"}
+
+                                                        </p>
+
+                                                    </div>
+
                                                 </div>
 
-                                                <div className={`${isDark ? "bg-gray-700" : "bg-gray-100"} p-4 rounded-lg`}>
-                                                    <p className="text-gray-400 text-xs">Last Login</p>
-                                                    <p className="mt-1 font-medium">
-                                                        {profile?.lastLoginAt
-                                                            ? new Date(profile.lastLoginAt).toLocaleString()
-                                                            : "-"}
-                                                    </p>
+                                                {/* LAST LOGIN */}
+                                                <div className="bg-gray-700 p-4 rounded-lg flex items-start gap-3">
+
+                                                    <ClockIcon className="w-5 h-5 text-indigo-400 mt-1" />
+
+                                                    <div>
+                                                        <p className="text-gray-400 text-xs">Last Login</p>
+
+                                                        <p className="mt-1 text-sm sm:text-base">
+
+                                                            {profile?.lastLoginAt
+                                                                ? new Date(profile.lastLoginAt).toLocaleString()
+                                                                : "-"}
+
+                                                        </p>
+
+                                                    </div>
+
                                                 </div>
 
                                             </div>
@@ -846,93 +987,107 @@ ${profile?.status === "active"
                                     </div>
 
                                 )
+
                             )}
 
                             {/* PLAN */}
                             {activeTab === "plan" && (
-                                <>
-                                    <div className="space-y-6">
 
-                                        <h2 className="text-lg font-semibold">Your Plan</h2>
+                                <div className="space-y-6">
 
-                                        <div className="grid md:grid-cols-3 gap-4">
+                                    <h2 className="text-base sm:text-lg md:text-xl font-semibold">
+                                        Upgrade Plan
+                                    </h2>
 
-                                            {/* FREE PLAN */}
-                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-5 rounded-xl border border-gray-600`}>
-                                                <p className="text-sm font-semibold">Free</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                                                <p className="text-3xl font-bold mt-2">$0</p>
-                                                <p className="text-xs text-gray-400">per month</p>
+                                        {/* FREE PLAN */}
+                                        <div className="bg-gray-800 p-4 sm:p-5 rounded-xl border border-gray-600 flex flex-col">
 
-                                                <ul className="mt-4 space-y-2 text-xs text-gray-400">
-                                                    <li>• 3000 tokens / month</li>
-                                                    <li>• Basic AI responses</li>
-                                                    <li>• Community support</li>
-                                                </ul>
-
-                                                <button
-                                                    className="mt-6 w-full bg-gray-600 text-white py-2 rounded-lg text-sm cursor-not-allowed"
-                                                >
-                                                    Current Plan
-                                                </button>
+                                            <div className="flex items-center gap-2">
+                                                <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                                                <p className="font-semibold text-sm sm:text-base">Free</p>
                                             </div>
 
+                                            <p className="text-2xl sm:text-3xl font-bold mt-3">$0</p>
+                                            <p className="text-xs text-gray-400">per month</p>
 
-                                            {/* GO PLAN */}
-                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-5 rounded-xl border border-indigo-500`}>
-                                                <p className="text-sm font-semibold">Go</p>
+                                            <ul className="mt-4 space-y-2 text-xs sm:text-sm text-gray-400">
+                                                <li>• 3000 tokens / month</li>
+                                                <li>• Basic AI responses</li>
+                                                <li>• Community support</li>
+                                            </ul>
 
-                                                <p className="text-3xl font-bold mt-2">$9</p>
-                                                <p className="text-xs text-gray-400">per month</p>
+                                            <button className="mt-6 w-full bg-gray-600 py-2 rounded-lg text-xs sm:text-sm">
+                                                Current Plan
+                                            </button>
 
-                                                <ul className="mt-4 space-y-2 text-xs text-gray-400">
-                                                    <li>• 20,000 tokens / month</li>
-                                                    <li>• Faster responses</li>
-                                                    <li>• Priority access</li>
-                                                </ul>
+                                        </div>
 
-                                                <button
-                                                    onClick={handleComingSoon}
-                                                    className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm"
-                                                >
-                                                    Upgrade
-                                                </button>
+
+                                        {/* GO PLAN */}
+                                        <div className="bg-gray-800 p-4 sm:p-5 rounded-xl border border-indigo-500 flex flex-col">
+
+                                            <div className="flex items-center gap-2">
+                                                <ZapIcon className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
+                                                <p className="font-semibold text-sm sm:text-base">Go</p>
                                             </div>
 
+                                            <p className="text-2xl sm:text-3xl font-bold mt-3">$9</p>
+                                            <p className="text-xs text-gray-400">per month</p>
 
-                                            {/* PRO PLAN */}
-                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-5 rounded-xl border border-purple-500 relative`}>
+                                            <ul className="mt-4 space-y-2 text-xs sm:text-sm text-gray-400">
+                                                <li>• 20,000 tokens / month</li>
+                                                <li>• Faster responses</li>
+                                                <li>• Priority access</li>
+                                            </ul>
 
-                                                <span className="absolute top-3 right-3 text-xs bg-purple-600 px-2 py-1 rounded">
-                                                    Popular
-                                                </span>
+                                            <button
+                                                onClick={handleComingSoon}
+                                                className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-xs sm:text-sm"
+                                            >
+                                                Upgrade
+                                            </button>
 
-                                                <p className="text-sm font-semibold">Pro</p>
+                                        </div>
 
-                                                <p className="text-3xl font-bold mt-2">$29</p>
-                                                <p className="text-xs text-gray-400">per month</p>
 
-                                                <ul className="mt-4 space-y-2 text-xs text-gray-400">
-                                                    <li>• 100,000 tokens / month</li>
-                                                    <li>• Fastest AI model</li>
-                                                    <li>• Priority queue</li>
-                                                    <li>• Premium support</li>
-                                                </ul>
+                                        {/* PRO PLAN */}
+                                        <div className="bg-gray-800 p-4 sm:p-5 rounded-xl border border-purple-500 relative flex flex-col">
 
-                                                <button
-                                                    onClick={handleComingSoon}
-                                                    className="mt-6 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-sm"
-                                                >
-                                                    Upgrade to Pro
-                                                </button>
+                                            <span className="absolute top-3 right-3 text-xs bg-purple-600 px-2 py-1 rounded">
+                                                Popular
+                                            </span>
+
+                                            <div className="flex items-center gap-2">
+                                                <FireIcon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                                                <p className="font-semibold text-sm sm:text-base">Pro</p>
                                             </div>
+
+                                            <p className="text-2xl sm:text-3xl font-bold mt-3">$29</p>
+                                            <p className="text-xs text-gray-400">per month</p>
+
+                                            <ul className="mt-4 space-y-2 text-xs sm:text-sm text-gray-400">
+                                                <li>• 100,000 tokens / month</li>
+                                                <li>• Fastest AI model</li>
+                                                <li>• Priority queue</li>
+                                                <li>• Premium support</li>
+                                            </ul>
+
+                                            <button
+                                                onClick={handleComingSoon}
+                                                className="mt-6 w-full bg-purple-600 hover:bg-purple-700 py-2 rounded-lg text-xs sm:text-sm"
+                                            >
+                                                Upgrade
+                                            </button>
 
                                         </div>
 
                                     </div>
 
-                                </>
+                                </div>
                             )}
+
 
                             {/* USAGE */}
                             {activeTab === "usage" && (
@@ -947,83 +1102,143 @@ ${profile?.status === "active"
 
                                     <div className="space-y-6">
 
-                                        <h2 className="text-lg font-semibold">Usage Metrics</h2>
+                                        <h2 className="text-base sm:text-lg md:text-xl font-semibold flex items-center gap-2">
+                                            <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
+                                            Usage Metrics
+                                        </h2>
 
                                         {/* BILLING PERIOD */}
-                                        <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg`}>
-                                            <p className="text-sm font-medium">Billing Period</p>
-                                            <p className="text-xs text-gray-400 mt-1">
-                                                {usageMetrics?.periodStart
-                                                    ? new Date(usageMetrics.periodStart).toLocaleDateString()
-                                                    : "-"}
-                                                {" "} → {" "}
-                                                {usageMetrics?.periodEnd
-                                                    ? new Date(usageMetrics.periodEnd).toLocaleDateString()
-                                                    : "-"}
-                                            </p>
+                                        <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg flex items-start gap-3`}>
+
+                                            <CalendarDaysIcon className="w-5 h-5 text-indigo-400 mt-1" />
+
+                                            <div>
+                                                <p className="text-sm font-medium">Billing Period</p>
+
+                                                <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                                                    {usageMetrics?.periodStart
+                                                        ? new Date(usageMetrics.periodStart).toLocaleDateString()
+                                                        : "-"}
+                                                    {" "} → {" "}
+                                                    {usageMetrics?.periodEnd
+                                                        ? new Date(usageMetrics.periodEnd).toLocaleDateString()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+
                                         </div>
 
+                                        {/* WARNING NEAR LIMIT */}
                                         {isNearLimit && !isLimitReached && (
-                                            <div className="bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 p-3 rounded-lg text-sm">
-                                                ⚠️ You have used <strong>{tokensUsed}</strong> of your <strong>{TOKEN_LIMIT}</strong> monthly tokens.
-                                                Consider upgrading your plan to avoid interruptions.
+
+                                            <div className="bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 p-3 rounded-lg flex items-start gap-2 text-xs sm:text-sm">
+
+                                                <ExclamationTriangleIcon className="w-5 h-5 mt-[2px]" />
+
+                                                <p>
+                                                    You have used <strong>{tokensUsed}</strong> of your <strong>{TOKEN_LIMIT}</strong> monthly tokens.
+                                                    Consider upgrading your plan to avoid interruptions.
+                                                </p>
+
                                             </div>
+
                                         )}
 
+                                        {/* LIMIT REACHED */}
                                         {isLimitReached && (
-                                            <div className="bg-red-500/10 border border-red-500/40 text-red-400 p-3 rounded-lg text-sm">
-                                                🚨 You have reached your monthly token limit ({TOKEN_LIMIT}).
-                                                Upgrade your plan to continue generating AI responses.
+
+                                            <div className="bg-red-500/10 border border-red-500/40 text-red-400 p-3 rounded-lg flex items-start gap-2 text-xs sm:text-sm">
+
+                                                <XCircleIcon className="w-5 h-5 mt-[2px]" />
+
+                                                <p>
+                                                    You have reached your monthly token limit (<strong>{TOKEN_LIMIT}</strong>).
+                                                    Upgrade your plan to continue generating AI responses.
+                                                </p>
+
                                             </div>
+
                                         )}
 
-                                        {/* DASHBOARD GRID */}
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {/* METRIC CARDS */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
                                             {/* TOTAL MESSAGES */}
-                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg`}>
-                                                <p className="text-sm font-medium">Total Messages</p>
-                                                <p className="text-2xl font-semibold mt-2">
-                                                    {usageMetrics?.totalMessages || 0}
-                                                </p>
-                                                <p className="text-xs text-gray-400 mt-1">
-                                                    Messages sent this period
-                                                </p>
+                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg flex items-start gap-3`}>
+
+                                                <ChatBubbleLeftRightIcon className="w-5 h-5 text-indigo-400 mt-1" />
+
+                                                <div>
+                                                    <p className="text-sm font-medium">Total Messages</p>
+
+                                                    <p className="text-xl sm:text-2xl font-semibold mt-2">
+                                                        {usageMetrics?.totalMessages || 0}
+                                                    </p>
+
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        Messages sent this period
+                                                    </p>
+                                                </div>
+
                                             </div>
 
                                             {/* TOTAL TOKENS */}
-                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg`}>
-                                                <p className="text-sm font-medium">Total Tokens</p>
-                                                <p className="text-2xl font-semibold mt-2">
-                                                    {usageMetrics?.totalTokens || 0}
-                                                </p>
-                                                <p className="text-xs text-gray-400 mt-1">
-                                                    Tokens consumed by AI responses
-                                                </p>
+                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg flex items-start gap-3`}>
+
+                                                <CpuChipIcon className="w-5 h-5 text-indigo-400 mt-1" />
+
+                                                <div>
+                                                    <p className="text-sm font-medium">Total Tokens</p>
+
+                                                    <p className="text-xl sm:text-2xl font-semibold mt-2">
+                                                        {usageMetrics?.totalTokens || 0}
+                                                    </p>
+
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        Tokens consumed by AI responses
+                                                    </p>
+                                                </div>
+
                                             </div>
 
                                             {/* TOTAL COST */}
-                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg`}>
-                                                <p className="text-sm font-medium">Estimated Cost</p>
-                                                <p className="text-2xl font-semibold mt-2">
-                                                    $
-                                                    {usageMetrics?.totalCost?.$numberDecimal
-                                                        ? Number(usageMetrics.totalCost.$numberDecimal).toFixed(4)
-                                                        : "0.00"}
-                                                </p>
-                                                <p className="text-xs text-gray-400 mt-1">
-                                                    Current billing period
-                                                </p>
+                                            <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg flex items-start gap-3`}>
+
+                                                <CurrencyDollarIcon className="w-5 h-5 text-indigo-400 mt-1" />
+
+                                                <div>
+                                                    <p className="text-sm font-medium">Estimated Cost</p>
+
+                                                    <p className="text-xl sm:text-2xl font-semibold mt-2">
+                                                        $
+                                                        {usageMetrics?.totalCost?.$numberDecimal
+                                                            ? Number(usageMetrics.totalCost.$numberDecimal).toFixed(4)
+                                                            : "0.00"}
+                                                    </p>
+
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        Current billing period
+                                                    </p>
+                                                </div>
+
                                             </div>
 
                                         </div>
 
-
-                                        {/* progress bar */}
+                                        {/* TOKEN USAGE PROGRESS */}
                                         <div className={`${isDark ? "bg-gray-800" : "bg-gray-200"} p-4 rounded-lg`}>
-                                            <p className="text-sm font-medium">Token Usage</p>
 
-                                            <p className="text-2xl font-semibold mt-2">
+                                            <div className="flex items-center gap-2">
+
+                                                <FireIcon className="w-5 h-5 text-indigo-400" />
+
+                                                <p className="text-sm font-medium">
+                                                    Token Usage
+                                                </p>
+
+                                            </div>
+
+                                            <p className="text-xl sm:text-2xl font-semibold mt-2">
                                                 {tokensUsed} / {TOKEN_LIMIT}
                                             </p>
 
@@ -1044,158 +1259,143 @@ ${profile?.status === "active"
                                             <p className="text-xs text-gray-400 mt-2">
                                                 {tokenPercentage.toFixed(1)}% of monthly token quota used
                                             </p>
+
                                         </div>
 
                                     </div>
 
-
-
-
                                 )
+
                             )}
 
                             {/* PREFERENCES */}
-                            {activeTab === "preferences" &&
+                            {activeTab === "preferences" && (
 
-                                (loadingPreferences ? (
-                                    <div className="flex items-center justify-center h-full">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
-                                    </div>
-                                ) :
+                                <div className="space-y-6">
 
-                                    (
+                                    <h2 className="text-base sm:text-lg md:text-xl font-semibold flex items-center gap-2">
+                                        <Cog6ToothIcon className="w-5 h-5 text-indigo-400" />
+                                        User Preferences
+                                    </h2>
 
-                                        <div className="space-y-6">
+                                    <div className="space-y-5">
 
-                                            <h2
-                                                className={`text-lg font-semibold ${isDark ? "text-white" : "text-black"
-                                                    }`}
+                                        {/* MODEL */}
+                                        <div className="space-y-1">
+
+                                            <label className="text-xs sm:text-sm flex items-center gap-2 font-medium">
+                                                <CpuChipIcon className="w-4 h-4 text-indigo-400" />
+                                                Default Model
+                                            </label>
+
+                                            <select
+                                                name="defaultModel"
+                                                value={preferences.defaultModel}
+                                                onChange={handlePreferenceChange}
+                                                className={`w-full p-2 sm:p-3 rounded-md text-sm sm:text-base
+${isDark ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
                                             >
-                                                User Preferences
-                                            </h2>
-
-                                            <div className="space-y-4">
-
-                                                {/* MODEL */}
-                                                <div>
-                                                    <label
-                                                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"
-                                                            }`}
-                                                    >
-                                                        Default Model
-                                                    </label>
-
-                                                    <select
-                                                        name="defaultModel"
-                                                        value={preferences.defaultModel}
-                                                        onChange={handlePreferenceChange}
-                                                        className={`mt-1 w-full p-2 rounded-md text-sm ${isDark
-                                                            ? "bg-gray-800 text-white"
-                                                            : "bg-gray-200 text-black"
-                                                            }`}
-                                                    >
-                                                        <option value="gpt-3.5">GPT-3.5</option>
-                                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                                                        <option value="gpt-4">GPT-4</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* TEMPERATURE */}
-                                                <div>
-                                                    <label
-                                                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"
-                                                            }`}
-                                                    >
-                                                        Temperature
-                                                    </label>
-
-                                                    <input
-                                                        type="number"
-                                                        step="0.1"
-                                                        min="0"
-                                                        max="1"
-                                                        name="temperature"
-                                                        value={preferences.temperature}
-                                                        onChange={handlePreferenceChange}
-                                                        className={`mt-1 w-full p-2 rounded-md text-sm ${isDark
-                                                            ? "bg-gray-800 text-white"
-                                                            : "bg-gray-200 text-black"
-                                                            }`}
-                                                    />
-                                                </div>
-
-                                                {/* TONE */}
-                                                <div>
-                                                    <label
-                                                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"
-                                                            }`}
-                                                    >
-                                                        Tone
-                                                    </label>
-
-                                                    <select
-                                                        name="tone"
-                                                        value={preferences.tone}
-                                                        onChange={handlePreferenceChange}
-                                                        className={`mt-1 w-full p-2 rounded-md text-sm ${isDark
-                                                            ? "bg-gray-800 text-white"
-                                                            : "bg-gray-200 text-black"
-                                                            }`}
-                                                    >
-                                                        <option value="formal">Formal</option>
-                                                        <option value="casual">Casual</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* THEME */}
-                                                <div>
-                                                    <label
-                                                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"
-                                                            }`}
-                                                    >
-                                                        Theme
-                                                    </label>
-
-                                                    <select
-                                                        name="theme"
-                                                        value={preferences.theme}
-                                                        onChange={(e) => handleThemeChange(e.target.value)}
-                                                        className={`mt-1 w-full p-2 rounded-md text-sm ${isDark
-                                                            ? "bg-gray-800 text-white"
-                                                            : "bg-gray-200 text-black"
-                                                            }`}
-                                                    >
-                                                        <option value="light">Light</option>
-                                                        <option value="dark">Dark</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* SAVE BUTTON */}
-                                                <button
-                                                    onClick={updatePreferences}
-                                                    className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm hover:bg-indigo-700 transition"
-                                                >
-                                                    Save Preferences
-                                                </button>
-
-                                            </div>
+                                                <option value="gpt-3.5">GPT-3.5</option>
+                                                <option value="gpt-4">GPT-4</option>
+                                            </select>
 
                                         </div>
 
-                                    )
-                                )}
+                                        {/* TEMPERATURE */}
+                                        <div className="space-y-1">
+
+                                            <label className="text-xs sm:text-sm flex items-center gap-2 font-medium">
+                                                <AdjustmentsHorizontalIcon className="w-4 h-4 text-indigo-400" />
+                                                Temperature
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                min="0"
+                                                max="1"
+                                                name="temperature"
+                                                value={preferences.temperature}
+                                                onChange={handlePreferenceChange}
+                                                className={`w-full p-2 sm:p-3 rounded-md text-sm sm:text-base
+${isDark ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
+                                            />
+
+                                            <p className="text-xs text-gray-400">
+                                                Controls randomness. Lower values make responses more focused.
+                                            </p>
+
+                                        </div>
+
+                                        {/* TONE */}
+                                        <div className="space-y-1">
+
+                                            <label className="text-xs sm:text-sm flex items-center gap-2 font-medium">
+                                                <ChatBubbleLeftRightIcon className="w-4 h-4 text-indigo-400" />
+                                                Response Tone
+                                            </label>
+
+                                            <select
+                                                name="tone"
+                                                value={preferences.tone}
+                                                onChange={handlePreferenceChange}
+                                                className={`w-full p-2 sm:p-3 rounded-md text-sm sm:text-base
+${isDark ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                <option value="formal">Formal</option>
+                                                <option value="casual">Casual</option>
+                                            </select>
+
+                                        </div>
+
+                                        {/* THEME */}
+                                        <div className="space-y-1">
+
+                                            <label className="text-xs sm:text-sm flex items-center gap-2 font-medium">
+                                                <PaintBrushIcon className="w-4 h-4 text-indigo-400" />
+                                                Theme
+                                            </label>
+
+                                            <select
+                                                name="theme"
+                                                value={preferences.theme}
+                                                onChange={(e) => handleThemeChange(e.target.value)}
+                                                className={`w-full p-2 sm:p-3 rounded-md text-sm sm:text-base
+${isDark ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                <option value="light">Light</option>
+                                                <option value="dark">Dark</option>
+                                            </select>
+
+                                        </div>
+
+                                        {/* SAVE BUTTON */}
+                                        <button
+                                            onClick={updatePreferences}
+                                            className="flex items-center justify-center gap-2 bg-indigo-600 px-4 py-2 sm:py-3 rounded-md hover:bg-indigo-700 transition text-sm sm:text-base"
+                                        >
+                                            <CheckIcon className="w-4 h-4" />
+                                            Save Preferences
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            )}
 
                         </div>
 
-                        {/* CLOSE BUTTON */}
+                        {/* CLOSE */}
                         <button
                             onClick={() => setOpenSettings(false)}
-                            className="absolute top-3 right-3 text-gray-400 hover:text-white"
+                            className="absolute top-3 right-3 text-gray-400 hover:text-white text-lg"
                         >
                             ✕
                         </button>
 
                     </div>
+
                 </div>
             )}
         </div>

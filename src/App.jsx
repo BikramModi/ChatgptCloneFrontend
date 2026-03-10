@@ -134,7 +134,7 @@ function App() {
           const res = await api.get("/auth/me", { withCredentials: true });
           setUser(res.data.user); // backend should return { user: {...} }
 
-console.log("Fetched user for protected route:", res.data.user);
+          console.log("Fetched user for protected route:", res.data.user);
 
         } catch (err) {
           console.error("Protected route auth failed", err);
@@ -247,11 +247,11 @@ console.log("Fetched user for protected route:", res.data.user);
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/about" element={<AboutUsPage />} />
+          {/* <Route path="/about" element={<AboutUsPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/careers" element={<CareerPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} /> */}
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -261,19 +261,19 @@ console.log("Fetched user for protected route:", res.data.user);
 
           <Route element={<ProtectedRoute1 />}>
 
-            <Route path="/about" element={<AboutUsPage />} />
+            {/* <Route path="/about" element={<AboutUsPage />} />
             <Route path="/blog" element={<BlogPage />} />
-            <Route path="/contact1" element={<ContactPage />} />
+            <Route path="/contact1" element={<ContactPage />} /> */}
 
 
 
             <Route path="/user-dashboard" element={<CategoryWithProductsPage />} />
-            <Route path="/new-chat" element={ <ChatGPTLayout1 /> } />
-            <Route path="/new-chats/:id" element={ <ChatGPTLayout2 /> } />
+            <Route path="/new-chat" element={<ChatGPTLayout1 />} />
+            <Route path="/new-chats/:id" element={<ChatGPTLayout2 />} />
 
 
 
-
+            {/* 
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/category/:id" element={<ProductPage />} />
             <Route path="/single-product/:catId/:id" element={<SingleProductPage />} />
@@ -300,7 +300,7 @@ console.log("Fetched user for protected route:", res.data.user);
             <Route path="/reviews" element={<ReviewPage />} />
             <Route path="/create-review" element={<ReviewCreationPage />} />
 
-            <Route path="/search" element={<SearchPage />} />
+            <Route path="/search" element={<SearchPage />} /> */}
 
           </Route>
 
@@ -309,14 +309,17 @@ console.log("Fetched user for protected route:", res.data.user);
 
           <Route element={<ProtectedRoute2 />}>
 
-            <Route path="/admin-dashboard" element={<SellerHomePage />} />
+            {/* <Route path="/admin-dashboard" element={<SellerHomePage />} /> */}
+
+
+            
             <Route path="/seller/dashboard" element={<SellerHomePage />} />
-<Route path="/users" element={<UsersPage />} />
+            <Route path="/users" element={<UsersPage />} />
 
 
 
 
-            <Route path="/seller/category" element={<SellerCategoryPage />} />
+            {/* <Route path="/seller/category" element={<SellerCategoryPage />} />
             <Route path="/create-category" element={<CategoryCreationPage />} />
             <Route path="/view-product/:id" element={<ViewProductPage />} />
 
@@ -328,9 +331,9 @@ console.log("Fetched user for protected route:", res.data.user);
             <Route path="/order-itemsss/:id" element={<OrderItemPages />} />
             <Route path="/update-status/:id" element={<UpdateStatusPage />} />
 
-            
 
-            <Route path="/seller-reviews/:id" element={<AddReviewPage />} />
+
+            <Route path="/seller-reviews/:id" element={<AddReviewPage />} /> */}
 
 
 
