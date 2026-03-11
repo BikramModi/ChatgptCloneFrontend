@@ -61,10 +61,10 @@ const LoginPageChatgpt = ({ onSuccess }) => {
   };
 
   return (
-    <div className="w-full">
-      
+    <div className="w-full max-w-md mx-auto px-4 sm:px-6">
+
       {/* HEADER */}
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-white mb-6 text-center">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-white mb-6 sm:mb-8 text-center">
         Welcome Back
       </h2>
 
@@ -77,6 +77,7 @@ const LoginPageChatgpt = ({ onSuccess }) => {
           </label>
 
           <div className="relative mt-1">
+
             <Mail
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               size={18}
@@ -93,6 +94,7 @@ const LoginPageChatgpt = ({ onSuccess }) => {
               pl-10 pr-4
               py-2.5 sm:py-3
               text-sm sm:text-base
+              placeholder:text-xs sm:placeholder:text-sm
               bg-gray-800 text-white
               rounded-lg
               border border-gray-700
@@ -101,11 +103,13 @@ const LoginPageChatgpt = ({ onSuccess }) => {
               transition
               "
             />
+
           </div>
         </div>
 
         {/* PASSWORD */}
         <div>
+
           <label className="text-xs sm:text-sm text-gray-300">
             Password
           </label>
@@ -128,6 +132,7 @@ const LoginPageChatgpt = ({ onSuccess }) => {
               pl-10 pr-10
               py-2.5 sm:py-3
               text-sm sm:text-base
+              placeholder:text-xs sm:placeholder:text-sm
               bg-gray-800 text-white
               rounded-lg
               border border-gray-700
@@ -154,6 +159,7 @@ const LoginPageChatgpt = ({ onSuccess }) => {
             </button>
 
           </div>
+
         </div>
 
         {/* SUBMIT BUTTON */}
@@ -172,6 +178,7 @@ const LoginPageChatgpt = ({ onSuccess }) => {
           disabled:opacity-60
           "
         >
+
           {loading ? (
             <>
               <Loader2 size={18} className="animate-spin" />
@@ -183,9 +190,11 @@ const LoginPageChatgpt = ({ onSuccess }) => {
               Login
             </>
           )}
+
         </button>
 
       </form>
+
     </div>
   );
 };

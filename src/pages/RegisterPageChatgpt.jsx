@@ -46,7 +46,6 @@ const RegisterPageChatgpt = ({ onSuccess, switchToLogin }) => {
 
       if (onSuccess) onSuccess();
       if (switchToLogin) switchToLogin();
-
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed ❌");
     } finally {
@@ -55,88 +54,140 @@ const RegisterPageChatgpt = ({ onSuccess, switchToLogin }) => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 sm:px-6 md:px-8 py-6">
-      
+    <div className="w-full max-w-md mx-auto px-4 sm:px-6 py-6">
+
       {/* Title */}
-      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white mb-6 text-center">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-white mb-6 sm:mb-8 text-center">
         Create your account
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
 
-{/* Name */}
-<div>
-  <label className="block text-gray-300 mb-1 text-sm sm:text-base">
-    Name
-  </label>
+        {/* Name */}
+        <div>
+          <label className="block text-gray-300 mb-1 text-xs sm:text-sm">
+            Name
+          </label>
 
-  <div className="flex items-center bg-gray-800 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-emerald-500">
-    <UserIcon className="w-5 h-5 text-gray-400 mr-2" />
+          <div className="relative">
 
-    <input
-      type="text"
-      name="name"
-      value={formData.name}
-      onChange={handleChange}
-      placeholder="Enter your name"
-      className="w-full bg-transparent text-white outline-none text-sm sm:text-base"
-    />
-  </div>
-</div>
+            <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
 
-{/* Email */}
-<div>
-  <label className="block text-gray-300 mb-1 text-sm sm:text-base">
-    Email
-  </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              className="
+              w-full
+              pl-10 pr-4
+              py-2.5 sm:py-3
+              text-sm sm:text-base
+              placeholder:text-xs sm:placeholder:text-sm
+              bg-gray-800 text-white
+              rounded-lg
+              border border-gray-700
+              focus:ring-2 focus:ring-emerald-500
+              focus:outline-none
+              transition
+              "
+            />
 
-  <div className="flex items-center bg-gray-800 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-emerald-500">
-    <EnvelopeIcon className="w-5 h-5 text-gray-400 mr-2" />
+          </div>
+        </div>
 
-    <input
-      type="email"
-      name="email"
-      value={formData.email}
-      onChange={handleChange}
-      placeholder="Enter your email"
-      className="w-full bg-transparent text-white outline-none text-sm sm:text-base"
-    />
-  </div>
-</div>
+        {/* Email */}
+        <div>
+          <label className="block text-gray-300 mb-1 text-xs sm:text-sm">
+            Email
+          </label>
 
-{/* Password */}
-<div>
-  <label className="block text-gray-300 mb-1 text-sm sm:text-base">
-    Password
-  </label>
+          <div className="relative">
 
-  <div className="flex items-center bg-gray-800 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-emerald-500">
-    <LockClosedIcon className="w-5 h-5 text-gray-400 mr-2" />
+            <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
 
-    <input
-      type="password"
-      name="password"
-      value={formData.password}
-      onChange={handleChange}
-      placeholder="Enter your password"
-      className="w-full bg-transparent text-white outline-none text-sm sm:text-base"
-    />
-  </div>
-</div>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              className="
+              w-full
+              pl-10 pr-4
+              py-2.5 sm:py-3
+              text-sm sm:text-base
+              placeholder:text-xs sm:placeholder:text-sm
+              bg-gray-800 text-white
+              rounded-lg
+              border border-gray-700
+              focus:ring-2 focus:ring-emerald-500
+              focus:outline-none
+              transition
+              "
+            />
+
+          </div>
+        </div>
+
+        {/* Password */}
+        <div>
+          <label className="block text-gray-300 mb-1 text-xs sm:text-sm">
+            Password
+          </label>
+
+          <div className="relative">
+
+            <LockClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              className="
+              w-full
+              pl-10 pr-4
+              py-2.5 sm:py-3
+              text-sm sm:text-base
+              placeholder:text-xs sm:placeholder:text-sm
+              bg-gray-800 text-white
+              rounded-lg
+              border border-gray-700
+              focus:ring-2 focus:ring-emerald-500
+              focus:outline-none
+              transition
+              "
+            />
+
+          </div>
+        </div>
 
         {/* Button */}
         <button
           disabled={loading}
-          className="w-full py-2.5 sm:py-3 bg-emerald-600 rounded-lg text-white 
-          font-semibold text-sm sm:text-base
-          hover:bg-emerald-500 transition disabled:opacity-60"
+          className="
+          w-full
+          py-2.5 sm:py-3
+          text-sm sm:text-base
+          bg-emerald-600
+          text-white
+          rounded-lg
+          font-semibold
+          hover:bg-emerald-500
+          transition
+          disabled:opacity-60
+          "
         >
           {loading ? "Registering..." : "Register"}
         </button>
+
       </form>
 
       {/* Switch Login */}
-      <p className="text-center text-gray-400 mt-5 text-xs sm:text-sm">
+      <p className="text-center text-gray-400 mt-6 text-xs sm:text-sm">
         Already have an account?{" "}
         <button
           onClick={switchToLogin}
@@ -145,6 +196,7 @@ const RegisterPageChatgpt = ({ onSuccess, switchToLogin }) => {
           Login
         </button>
       </p>
+
     </div>
   );
 };
