@@ -69,7 +69,7 @@ function App() {
     if (loading) return null; // or spinner
 
     // If no user or wrong role, redirect
-    if (!user || user.role !== "user") return <Navigate to="/login" />;
+    if (!user || user.role !== "user") return <Navigate to="/" />;
 
     // ✅ Authenticated as user, render layout
     return <AppLayout1 />;
@@ -103,7 +103,7 @@ function App() {
     if (loading) return null; // or spinner
 
     // Redirect if not logged in or not admin
-    if (!user || user.role !== "admin") return <Navigate to="/login" replace />;
+    if (!user || user.role !== "admin") return <Navigate to="/" replace />;
 
     // ✅ Authenticated admin, render layout
     return <AppLayout2 />;
