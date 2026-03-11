@@ -198,7 +198,7 @@ const ChatBody = ({ navbarHeight = 72 }) => {
         </div>
 
         {/* ================= INPUT ================= */}
-        <div className="flex-shrink-0 bg-gray-800 border-t border-gray-700 p-3 sm:p-4">
+        <div className="shrink-0 bg-gray-800 border-t border-gray-700 p-3 sm:p-4">
 
           <TimedLoginReminder
             onLoginClick={() => setShowLogin(true)}

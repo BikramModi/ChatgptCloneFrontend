@@ -27,7 +27,7 @@ const TimedLoginReminder = ({ onLoginClick, onSignupClick }) => {
       rounded-xl
       shadow-lg
       p-3 sm:p-4
-      bg-gradient-to-r
+      bg-linear-to-r
       from-emerald-600
       to-emerald-500
       text-white

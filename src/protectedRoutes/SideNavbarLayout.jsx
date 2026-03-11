@@ -37,7 +37,7 @@ import {
     PaintBrushIcon,
     CheckIcon,
 
-  XMarkIcon,
+    XMarkIcon,
 
 
 
@@ -418,58 +418,57 @@ const SideNavbarLayout = ({ children }) => {
       `}
             >
                 {/* HEADER */}
-<div className="p-2 sm:p-3 border-b border-gray-800">
+                <div className="p-2 sm:p-3 border-b border-gray-800">
 
-  {/* TOP ROW */}
-  <div className="flex items-center gap-2">
+                    {/* TOP ROW */}
+                    <div className="flex items-center gap-2">
 
-    <button
-      onClick={() => setCollapsed(!collapsed)}
-      className="p-2 rounded-md hover:bg-gray-800 transition"
-    >
-      <Bars3Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-    </button>
+                        <button
+                            onClick={() => setCollapsed(!collapsed)}
+                            className="p-2 rounded-md hover:bg-gray-800 transition"
+                        >
+                            <Bars3Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </button>
 
-    {!collapsed && (
-      <span className="hidden sm:block font-semibold text-sm md:text-base">
-        Chats
-      </span>
-    )}
+                        {!collapsed && (
+                            <span className="hidden sm:block font-semibold text-sm md:text-base">
+                                Chats
+                            </span>
+                        )}
 
-  </div>
+                    </div>
 
-  {/* NEW CHAT BUTTON */}
-  <Link to="/new-chat">
-    <button
-      onClick={() => {
-        setIsNewChatActive(true);
-        setActiveChatId(null);
-      }}
-      className={`flex items-center gap-2 sm:gap-3 w-full mt-3
+                    {/* NEW CHAT BUTTON */}
+                    <Link to="/new-chat">
+                        <button
+                            onClick={() => {
+                                setIsNewChatActive(true);
+                                setActiveChatId(null);
+                            }}
+                            className={`flex items-center gap-2 sm:gap-3 w-full mt-3
       px-3 py-2.5 sm:py-3
       rounded-lg
       text-xs sm:text-sm
       font-medium
       transition
-      ${
-        isNewChatActive
-          ? "bg-gray-700"
-          : "hover:bg-gray-800"
-      }`}
-    >
+      ${isNewChatActive
+                                    ? "bg-gray-700"
+                                    : "hover:bg-gray-800"
+                                }`}
+                        >
 
-      <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                            <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
 
-      {!collapsed && (
-        <span className="truncate">
-          New Chat
-        </span>
-      )}
+                            {!collapsed && (
+                                <span className="truncate">
+                                    New Chat
+                                </span>
+                            )}
 
-    </button>
-  </Link>
+                        </button>
+                    </Link>
 
-</div>
+                </div>
 
                 {/* CHAT LIST */}
                 <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1">
@@ -710,59 +709,58 @@ const SideNavbarLayout = ({ children }) => {
                             </button>
 
                             {/* LOGOUT MODAL */}
-                           {showLogoutModal && (
-  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                            {showLogoutModal && (
+                                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-    <div
-      className={`${
-        isDark ? "bg-gray-900 text-white" : "bg-white text-black"
-      } rounded-xl p-5 sm:p-6 w-full max-w-xs sm:max-w-sm shadow-xl`}
-    >
+                                    <div
+                                        className={`${isDark ? "bg-gray-900 text-white" : "bg-white text-black"
+                                            } rounded-xl p-5 sm:p-6 w-full max-w-xs sm:max-w-sm shadow-xl`}
+                                    >
 
-      {/* HEADER */}
-      <div className="flex items-center gap-2 mb-3">
+                                        {/* HEADER */}
+                                        <div className="flex items-center gap-2 mb-3">
 
-        <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-400"/>
+                                            <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-400" />
 
-        <h2 className="text-sm sm:text-base md:text-lg font-semibold">
-          Log out
-        </h2>
+                                            <h2 className="text-sm sm:text-base md:text-lg font-semibold">
+                                                Log out
+                                            </h2>
 
-      </div>
+                                        </div>
 
-      {/* MESSAGE */}
-      <p className="text-xs sm:text-sm text-gray-400 mb-6">
-        Are you sure you want to log out of your account?
-      </p>
+                                        {/* MESSAGE */}
+                                        <p className="text-xs sm:text-sm text-gray-400 mb-6">
+                                            Are you sure you want to log out of your account?
+                                        </p>
 
-      {/* BUTTONS */}
-      <div className="flex justify-end gap-3">
+                                        {/* BUTTONS */}
+                                        <div className="flex justify-end gap-3">
 
-        <button
-          onClick={() => setShowLogoutModal(false)}
-          className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm
+                                            <button
+                                                onClick={() => setShowLogoutModal(false)}
+                                                className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm
           ${isDark
-            ? "bg-gray-800 hover:bg-gray-700"
-            : "bg-gray-200 hover:bg-gray-300"}`}
-        >
-          <XMarkIcon className="w-4 h-4"/>
-          Cancel
-        </button>
+                                                        ? "bg-gray-800 hover:bg-gray-700"
+                                                        : "bg-gray-200 hover:bg-gray-300"}`}
+                                            >
+                                                <XMarkIcon className="w-4 h-4" />
+                                                Cancel
+                                            </button>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white"
-        >
-          <ArrowRightOnRectangleIcon className="w-4 h-4"/>
-          Log out
-        </button>
+                                            <button
+                                                onClick={handleLogout}
+                                                className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white"
+                                            >
+                                                <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                                                Log out
+                                            </button>
 
-      </div>
+                                        </div>
 
-    </div>
+                                    </div>
 
-  </div>
-)}
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -1133,7 +1131,7 @@ const SideNavbarLayout = ({ children }) => {
 
                                             <div className="bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 p-3 rounded-lg flex items-start gap-2 text-xs sm:text-sm">
 
-                                                <ExclamationTriangleIcon className="w-5 h-5 mt-[2px]" />
+                                                <ExclamationTriangleIcon className="w-5 h-5 mt-0.5" />
 
                                                 <p>
                                                     You have used <strong>{tokensUsed}</strong> of your <strong>{TOKEN_LIMIT}</strong> monthly tokens.
@@ -1149,7 +1147,7 @@ const SideNavbarLayout = ({ children }) => {
 
                                             <div className="bg-red-500/10 border border-red-500/40 text-red-400 p-3 rounded-lg flex items-start gap-2 text-xs sm:text-sm">
 
-                                                <XCircleIcon className="w-5 h-5 mt-[2px]" />
+                                                <XCircleIcon className="w-5 h-5 mt-0.5" />
 
                                                 <p>
                                                     You have reached your monthly token limit (<strong>{TOKEN_LIMIT}</strong>).

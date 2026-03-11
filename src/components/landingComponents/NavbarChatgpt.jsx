@@ -97,7 +97,7 @@ const Header = () => {
     left-0
     w-44 sm:w-52
     backdrop-blur-lg
-    bg-gradient-to-b from-gray-800/95 to-gray-900/95
+    bg-linear-to-b from-gray-800/95 to-gray-900/95
     border border-gray-700/60
     rounded-xl
     shadow-2xl
@@ -137,7 +137,7 @@ const Header = () => {
       px-3 py-2
       text-xs sm:text-sm
       text-white
-      bg-gradient-to-r
+      bg-linear-to-r
       from-emerald-600
       to-emerald-500
       hover:from-emerald-500
