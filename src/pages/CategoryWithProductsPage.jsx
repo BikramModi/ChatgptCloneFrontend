@@ -1,7 +1,5 @@
 import React from 'react'
 
-import CategoryWithProductsList from '../components/landingComponents/CategoryWithProductsList'
-
 import ChatGPTLayout from './ChatgptNewChat'
 
 const CategoryWithProductsPage = () => {
