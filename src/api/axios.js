@@ -58,6 +58,49 @@ const api = axios.create({
 
 
 
+
+
+
+
+api.interceptors.response.use(
+  (response) => response,
+
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
+    // 🔥 Access expired
+    if (error.response.status === 403 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        await api.post("/auth/refresh");
+        return api(originalRequest);
+      } catch (refreshError) {
+        triggerLogout(); // 👈 THIS calls your AuthContext logout
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // 🔥 Refresh expired
+    if (error.response.status === 401) {
+      triggerLogout();
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+
+
+
+
+export default api;
+
+
 // api.interceptors.response.use(
 //   (response) => response,
 
@@ -122,49 +165,6 @@ const api = axios.create({
 //   }
 // }
 // );
-
-
-
-
-api.interceptors.response.use(
-  (response) => response,
-
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (!error.response) {
-      return Promise.reject(error);
-    }
-
-    // 🔥 Access expired
-    if (error.response.status === 403 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        await api.post("/auth/refresh");
-        return api(originalRequest);
-      } catch (refreshError) {
-        triggerLogout(); // 👈 THIS calls your AuthContext logout
-        return Promise.reject(refreshError);
-      }
-    }
-
-    // 🔥 Refresh expired
-    if (error.response.status === 401) {
-      triggerLogout();
-    }
-
-    return Promise.reject(error);
-  }
-);
-
-
-
-
-
-export default api;
-
-
 
 
 

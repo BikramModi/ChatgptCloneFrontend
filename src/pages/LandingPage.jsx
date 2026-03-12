@@ -11,46 +11,34 @@ import { jwtDecode } from 'jwt-decode'
 import ChatBody from '../components/landingComponents/ChatBody'
 
 const LandingPage = () => {
-
-
-  // Redirect to user dashboard if logged in
-  
   const { token } = useAuth();
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-useEffect(() => {
-  if (!token) return; // not logged in → stay where you are
+  useEffect(() => {
+    if (!token) return;
 
-  try {
-    const decodedToken = jwtDecode(token);
-    console.log("Decoded Token:", decodedToken);
+    try {
+      const decodedToken = jwtDecode(token);
+      const role = decodedToken?.role;
 
-    const role = decodedToken?.role;
-
-    if (role === "user") {
-      navigate("/user-dashboard", { replace: true });
-    } else if (role === "seller") {
-      navigate("/seller/dashboard", { replace: true });
+      if (role === "user") {
+        navigate("/user-dashboard", { replace: true });
+      } else if (role === "seller") {
+        navigate("/seller/dashboard", { replace: true });
+      }
+    } catch (error) {
+      console.error("Invalid token:", error);
     }
-  } catch (error) {
-    console.error("Invalid token:", error);
-  }
-}, [token, navigate]);
-
+  }, [token, navigate]);
 
   return (
-    <div className='bg-indigo-300'>
-
-      
-
-
+    <div className="flex flex-col h-screen bg-gray-900 overflow-hidden">
       <Header />
-      <ChatBody />
-      
-
-
+      <div className="flex-1 min-h-0">
+        <ChatBody />
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default LandingPage
