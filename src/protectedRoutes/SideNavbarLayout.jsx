@@ -51,10 +51,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { useTheme } from "../context/ThemeContext";
+
+
 
 
 
 const SideNavbarLayout = ({ children }) => {
+
+    const { theme, setTheme, updatePreferences: updateThemePreferences } = useTheme();
+
+    const isDark = theme === "dark";
 
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -136,7 +143,7 @@ const SideNavbarLayout = ({ children }) => {
         }
     }, [activeTab]);
 
-    const isDark = preferences.theme === "dark";
+
 
     const fetchUsageMetrics = async () => {
         try {
@@ -186,9 +193,12 @@ const SideNavbarLayout = ({ children }) => {
 
     const updatePreferences = async () => {
         try {
+
+            const { theme, ...rest } = preferences;
+
             await api.patch(
                 "/preferences/update",
-                preferences,
+                rest,
                 { withCredentials: true }
             );
 
@@ -199,20 +209,23 @@ const SideNavbarLayout = ({ children }) => {
         }
     };
 
-    const handleThemeChange = async (theme) => {
+    const handleThemeChange = async (newTheme) => {
 
-        // update UI instantly
+        // update theme globally
+        setTheme(newTheme);
+
+        // also update local preferences state
         setPreferences((prev) => ({
             ...prev,
-            theme
+            theme: newTheme
         }));
 
         try {
-            await api.patch(
-                "/preferences/update",
-                { theme },
-                { withCredentials: true }
-            );
+
+            await updateThemePreferences({
+                theme: newTheme
+            });
+
         } catch (err) {
             toast.error("Theme update failed");
         }
@@ -418,14 +431,21 @@ const SideNavbarLayout = ({ children }) => {
       `}
             >
                 {/* HEADER */}
-                <div className="p-2 sm:p-3 border-b border-gray-800">
+                <div
+                    className={`p-2 sm:p-3 border-b
+  ${isDark
+                            ? "border-gray-800 bg-gray-900 text-white"
+                            : "border-blue-400 bg-blue-300 text-gray-900"
+                        }`}
+                >
 
                     {/* TOP ROW */}
                     <div className="flex items-center gap-2">
 
                         <button
                             onClick={() => setCollapsed(!collapsed)}
-                            className="p-2 rounded-md hover:bg-gray-800 transition"
+                            className={`p-2 rounded-md transition
+      ${isDark ? "hover:bg-gray-800" : "hover:bg-blue-400"}`}
                         >
                             <Bars3Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                         </button>
@@ -438,8 +458,10 @@ const SideNavbarLayout = ({ children }) => {
 
                     </div>
 
+
                     {/* NEW CHAT BUTTON */}
                     <Link to="/new-chat">
+
                         <button
                             onClick={() => {
                                 setIsNewChatActive(true);
@@ -451,9 +473,14 @@ const SideNavbarLayout = ({ children }) => {
       text-xs sm:text-sm
       font-medium
       transition
+
       ${isNewChatActive
-                                    ? "bg-gray-700"
-                                    : "hover:bg-gray-800"
+                                    ? isDark
+                                        ? "bg-gray-700 text-white"
+                                        : "bg-blue-500 text-white"
+                                    : isDark
+                                        ? "hover:bg-gray-800"
+                                        : "hover:bg-blue-400"
                                 }`}
                         >
 
@@ -466,6 +493,7 @@ const SideNavbarLayout = ({ children }) => {
                             )}
 
                         </button>
+
                     </Link>
 
                 </div>
@@ -1000,7 +1028,10 @@ const SideNavbarLayout = ({ children }) => {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
                                         {/* FREE PLAN */}
-                                        <div className="bg-gray-800 p-4 sm:p-5 rounded-xl border border-gray-600 flex flex-col">
+                                        <div
+                                            className={`p-4 sm:p-5 rounded-xl border flex flex-col
+${isDark ? "bg-gray-800 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
+                                        >
 
                                             <div className="flex items-center gap-2">
                                                 <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -1008,15 +1039,20 @@ const SideNavbarLayout = ({ children }) => {
                                             </div>
 
                                             <p className="text-2xl sm:text-3xl font-bold mt-3">$0</p>
-                                            <p className="text-xs text-gray-400">per month</p>
+                                            <p className={`${isDark ? "text-gray-400" : "text-gray-500"} text-xs`}>
+                                                per month
+                                            </p>
 
-                                            <ul className="mt-4 space-y-2 text-xs sm:text-sm text-gray-400">
+                                            <ul className={`${isDark ? "text-gray-400" : "text-gray-600"} mt-4 space-y-2 text-xs sm:text-sm`}>
                                                 <li>• 3000 tokens / month</li>
                                                 <li>• Basic AI responses</li>
                                                 <li>• Community support</li>
                                             </ul>
 
-                                            <button className="mt-6 w-full bg-gray-600 py-2 rounded-lg text-xs sm:text-sm">
+                                            <button
+                                                className={`mt-6 w-full py-2 rounded-lg text-xs sm:text-sm
+${isDark ? "bg-gray-600 text-white" : "bg-gray-300 text-black"}`}
+                                            >
                                                 Current Plan
                                             </button>
 
@@ -1024,7 +1060,10 @@ const SideNavbarLayout = ({ children }) => {
 
 
                                         {/* GO PLAN */}
-                                        <div className="bg-gray-800 p-4 sm:p-5 rounded-xl border border-indigo-500 flex flex-col">
+                                        <div
+                                            className={`p-4 sm:p-5 rounded-xl border flex flex-col
+${isDark ? "bg-gray-800 border-indigo-500 text-white" : "bg-white border-indigo-400 text-black"}`}
+                                        >
 
                                             <div className="flex items-center gap-2">
                                                 <ZapIcon className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
@@ -1032,9 +1071,11 @@ const SideNavbarLayout = ({ children }) => {
                                             </div>
 
                                             <p className="text-2xl sm:text-3xl font-bold mt-3">$9</p>
-                                            <p className="text-xs text-gray-400">per month</p>
+                                            <p className={`${isDark ? "text-gray-400" : "text-gray-500"} text-xs`}>
+                                                per month
+                                            </p>
 
-                                            <ul className="mt-4 space-y-2 text-xs sm:text-sm text-gray-400">
+                                            <ul className={`${isDark ? "text-gray-400" : "text-gray-600"} mt-4 space-y-2 text-xs sm:text-sm`}>
                                                 <li>• 20,000 tokens / month</li>
                                                 <li>• Faster responses</li>
                                                 <li>• Priority access</li>
@@ -1042,7 +1083,7 @@ const SideNavbarLayout = ({ children }) => {
 
                                             <button
                                                 onClick={handleComingSoon}
-                                                className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-xs sm:text-sm"
+                                                className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-xs sm:text-sm"
                                             >
                                                 Upgrade
                                             </button>
@@ -1051,9 +1092,12 @@ const SideNavbarLayout = ({ children }) => {
 
 
                                         {/* PRO PLAN */}
-                                        <div className="bg-gray-800 p-4 sm:p-5 rounded-xl border border-purple-500 relative flex flex-col">
+                                        <div
+                                            className={`p-4 sm:p-5 rounded-xl border relative flex flex-col
+${isDark ? "bg-gray-800 border-purple-500 text-white" : "bg-white border-purple-400 text-black"}`}
+                                        >
 
-                                            <span className="absolute top-3 right-3 text-xs bg-purple-600 px-2 py-1 rounded">
+                                            <span className="absolute top-3 right-3 text-xs bg-purple-600 text-white px-2 py-1 rounded">
                                                 Popular
                                             </span>
 
@@ -1063,9 +1107,11 @@ const SideNavbarLayout = ({ children }) => {
                                             </div>
 
                                             <p className="text-2xl sm:text-3xl font-bold mt-3">$29</p>
-                                            <p className="text-xs text-gray-400">per month</p>
+                                            <p className={`${isDark ? "text-gray-400" : "text-gray-500"} text-xs`}>
+                                                per month
+                                            </p>
 
-                                            <ul className="mt-4 space-y-2 text-xs sm:text-sm text-gray-400">
+                                            <ul className={`${isDark ? "text-gray-400" : "text-gray-600"} mt-4 space-y-2 text-xs sm:text-sm`}>
                                                 <li>• 100,000 tokens / month</li>
                                                 <li>• Fastest AI model</li>
                                                 <li>• Priority queue</li>
@@ -1074,7 +1120,7 @@ const SideNavbarLayout = ({ children }) => {
 
                                             <button
                                                 onClick={handleComingSoon}
-                                                className="mt-6 w-full bg-purple-600 hover:bg-purple-700 py-2 rounded-lg text-xs sm:text-sm"
+                                                className="mt-6 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-xs sm:text-sm"
                                             >
                                                 Upgrade
                                             </button>
@@ -1356,10 +1402,10 @@ ${isDark ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
 
                                             <select
                                                 name="theme"
-                                                value={preferences.theme}
+                                                value={theme}
                                                 onChange={(e) => handleThemeChange(e.target.value)}
                                                 className={`w-full p-2 sm:p-3 rounded-md text-sm sm:text-base
-${isDark ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
+  ${isDark ? "bg-gray-800 text-white" : "bg-gray-200 text-black"}`}
                                             >
                                                 <option value="light">Light</option>
                                                 <option value="dark">Dark</option>

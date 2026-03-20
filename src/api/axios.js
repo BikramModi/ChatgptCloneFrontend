@@ -37,13 +37,8 @@
 
 
 import axios from "axios";
-import { Navigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-
 
 import { triggerLogout } from "../context/authStore";
-
-
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -51,16 +46,6 @@ const api = axios.create({
   baseURL,
   withCredentials: true, // VERY IMPORTANT (for cookies)
 });
-
-
-
-
-
-
-
-
-
-
 
 api.interceptors.response.use(
   (response) => response,
@@ -92,11 +77,8 @@ api.interceptors.response.use(
 
     return Promise.reject(error);
   }
+  
 );
-
-
-
-
 
 export default api;
 
